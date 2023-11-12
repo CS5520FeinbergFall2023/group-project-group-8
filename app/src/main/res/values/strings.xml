@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">group-project-group-8</string>
+    <string name="username">Username:</string>
+    <string name="usernameHint">Username</string>
+    <string name="login">Login</string>
 </resources>
