@@ -15,7 +15,9 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.gms.common.util.IOUtils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -108,8 +110,8 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private String convertStreamToString(InputStream is) {
-        Scanner s = new Scanner(is).useDelimiter("\\A");
-        return s.hasNext() ? s.next().replace(",", "\n") : "";
+        Scanner s = new Scanner(is);
+        return s.useDelimiter("\\A").next();
     }
 
     class RunnableThread implements Runnable {
@@ -149,7 +151,19 @@ public class Dashboard extends AppCompatActivity {
 
             }
             final String resp = convertStreamToString(inputStream);
-            Log.d("NumberFacts", "response: " + resp);
+            JSONObject myObj = null;
+            try {
+                myObj = new JSONObject(resp);
+            } catch (JSONException e) {
+                Log.d("", e.toString());
+            }
+            Log.d("", "myObj: " + myObj);
+            Log.d("", "myObj Class:" + myObj.getClass());
+            try {
+                Log.d("","Meta Data: " + myObj.get("Meta Data").toString());
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
             conn.disconnect();
         }
     }
