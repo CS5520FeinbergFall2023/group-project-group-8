@@ -2,20 +2,10 @@ package edu.northeastern.group_project_group_8;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.google.android.gms.common.util.IOUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,10 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 
@@ -151,16 +138,18 @@ public class Dashboard extends AppCompatActivity {
 
             }
             final String resp = convertStreamToString(inputStream);
-            JSONObject myObj = null;
+            JSONObject responseObject = null;
             try {
-                myObj = new JSONObject(resp);
+                responseObject = new JSONObject(resp);
             } catch (JSONException e) {
                 Log.d("", e.toString());
             }
-            Log.d("", "myObj: " + myObj);
-            Log.d("", "myObj Class:" + myObj.getClass());
+            Log.d("", "responseObject: " + responseObject);
+            Log.d("", "responseObject Class:" + responseObject.getClass());
             try {
-                Log.d("","Meta Data: " + myObj.get("Meta Data").toString());
+                Log.d("","Meta Data: " + responseObject.get("Meta Data").getClass());
+                JSONObject metaData = (JSONObject) responseObject.get("Meta Data");
+                Log.d("", "Information: " + metaData.get("1. Information"));
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
