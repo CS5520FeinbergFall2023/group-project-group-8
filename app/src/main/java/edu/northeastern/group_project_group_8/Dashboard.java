@@ -34,7 +34,7 @@ public class Dashboard extends AppCompatActivity {
         ArrayList<String> positionList = new ArrayList<String>();
         positionList.add("IBM");
         positionList.add("IBM");
-        positionList.add("IBM");
+//        positionList.add("IBM");
         portfolioData = new PortfolioData(positionList);
         //TODO: Figure out how to wait for API call to finish before moving forward with populating this page.  Sleep() is not a viable option.
         try {
@@ -42,10 +42,13 @@ public class Dashboard extends AppCompatActivity {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        for (PositionPrice positionPrice : portfolioData.positionPrices) {
-            for(Price price : positionPrice.prices) {
-                Log.d("", positionPrice.positionName + ": " + price.date + ": " + price.price);
-            }
+//        for (PositionPrice positionPrice : portfolioData.positionPrices) {
+//            for(Price price : positionPrice.prices) {
+//                Log.d("", positionPrice.positionName + ": " + price.date + ": " + price.price);
+//            }
+//        }
+        for (Price price : portfolioData.priceSumsByDate) {
+            Log.d("", price.date + ": " + price.price);
         }
 
         // This code is just to test out the graphing functionality

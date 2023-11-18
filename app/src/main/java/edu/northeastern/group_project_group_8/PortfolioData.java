@@ -14,16 +14,19 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 
 public class PortfolioData {
     ArrayList<String> positions;
     ArrayList<PositionPrice> positionPrices;
+    ArrayList<Price> priceSumsByDate;
 
     public PortfolioData(ArrayList<String> positions) {
         this.positions = positions;
         this.positionPrices = new ArrayList<PositionPrice>();
+        this.priceSumsByDate = new ArrayList<Price>();
 
         try {
             getData();
@@ -127,20 +130,46 @@ public class PortfolioData {
 //                for (int i = 0; i < currentPositionPrice.prices.size(); i++) {
 //                    Log.d("", "Date: " + currentPositionPrice.prices.get(i).date + ", Price: " + currentPositionPrice.prices.get(i).price);
 //                }
-                currentPositionPrice.prices.sort(new Comparator<Price>() {
-                    @Override
-                    public int compare(Price o1, Price o2) {
-                        if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
-                    }
-                });
+//                currentPositionPrice.prices.sort(new Comparator<Price>() {
+//                    @Override
+//                    public int compare(Price o1, Price o2) {
+//                        if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
+//                            return 1;
+//                        } else {
+//                            return -1;
+//                        }
+//                    }
+//                });
                 positionPrices.add(currentPositionPrice);
                 Log.d("", "positionPrices Length: " + positionPrices.size());
                 conn.disconnect();
             }
+            HashMap<LocalDate, Double> sumPricesMap = new HashMap<LocalDate, Double>();
+            for (PositionPrice positionPrice : positionPrices) {
+                for (Price price : positionPrice.prices) {
+                    if (!sumPricesMap.containsKey(price.date)) {
+                        sumPricesMap.put(price.date, price.price);
+                    } else {
+                        Double temp = sumPricesMap.get(price.date);
+                        temp += price.price;
+                        sumPricesMap.put(price.date, temp);
+                    }
+                }
+            }
+            for (LocalDate key : sumPricesMap.keySet()) {
+                Price newPrice = new Price(key, sumPricesMap.get(key));
+                priceSumsByDate.add(newPrice);
+            }
+//            priceSumsByDate.sort(new Comparator<Price>() {
+//                @Override
+//                public int compare(Price o1, Price o2) {
+//                    if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
+//                        return 1;
+//                    } else {
+//                        return -1;
+//                    }
+//                }
+//            });
         }
     }
 
