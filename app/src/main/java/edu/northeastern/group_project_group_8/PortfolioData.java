@@ -13,6 +13,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Scanner;
 
@@ -34,6 +35,7 @@ public class PortfolioData {
     private void getData() throws IOException {
         RunnableThread connectToNetworkThreadRunnable = new RunnableThread();
         new Thread(connectToNetworkThreadRunnable).start();
+
     }
 
     class RunnableThread implements Runnable {
@@ -122,9 +124,19 @@ public class PortfolioData {
                         throw new RuntimeException(e);
                     }
                 }
-                for (int i = 0; i < currentPositionPrice.prices.size(); i++) {
-                    Log.d("", "Date: " + currentPositionPrice.prices.get(i).date + ", Price: " + currentPositionPrice.prices.get(i).price);
-                }
+//                for (int i = 0; i < currentPositionPrice.prices.size(); i++) {
+//                    Log.d("", "Date: " + currentPositionPrice.prices.get(i).date + ", Price: " + currentPositionPrice.prices.get(i).price);
+//                }
+                currentPositionPrice.prices.sort(new Comparator<Price>() {
+                    @Override
+                    public int compare(Price o1, Price o2) {
+                        if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    }
+                });
                 positionPrices.add(currentPositionPrice);
                 Log.d("", "positionPrices Length: " + positionPrices.size());
                 conn.disconnect();

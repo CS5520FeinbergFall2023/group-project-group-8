@@ -1,5 +1,7 @@
 package edu.northeastern.group_project_group_8;
 
+import static java.lang.Thread.sleep;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -34,6 +36,17 @@ public class Dashboard extends AppCompatActivity {
         positionList.add("IBM");
         positionList.add("IBM");
         portfolioData = new PortfolioData(positionList);
+        //TODO: Figure out how to wait for API call to finish before moving forward with populating this page.  Sleep() is not a viable option.
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        for (PositionPrice positionPrice : portfolioData.positionPrices) {
+            for(Price price : positionPrice.prices) {
+                Log.d("", positionPrice.positionName + ": " + price.date + ": " + price.price);
+            }
+        }
 
         // This code is just to test out the graphing functionality
 //        lineChart = findViewById(R.id.lineChart);
