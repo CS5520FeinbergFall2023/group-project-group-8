@@ -7,24 +7,16 @@ import android.util.Log;
 
 import com.github.mikephil.charting.charts.LineChart;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 
 public class Dashboard extends AppCompatActivity {
     String loggedInUser;
     private LineChart lineChart;
     private List<String> xValues;
+    PortfolioData portfolioData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +29,11 @@ public class Dashboard extends AppCompatActivity {
         loggedInUser = extras.getString("loggedInUsername");
         Log.d("", "User: " + loggedInUser);
 
-        PortfolioData a = new PortfolioData(new ArrayList<String>());
+        ArrayList<String> positionList = new ArrayList<String>();
+        positionList.add("IBM");
+        positionList.add("IBM");
+        positionList.add("IBM");
+        portfolioData = new PortfolioData(positionList);
 
         // This code is just to test out the graphing functionality
 //        lineChart = findViewById(R.id.lineChart);
