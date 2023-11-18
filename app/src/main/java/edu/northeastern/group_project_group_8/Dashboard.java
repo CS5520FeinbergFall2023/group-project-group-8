@@ -16,6 +16,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -35,6 +36,8 @@ public class Dashboard extends AppCompatActivity {
         }
         loggedInUser = extras.getString("loggedInUsername");
         Log.d("", "User: " + loggedInUser);
+
+        PortfolioData a = new PortfolioData(new ArrayList<String>());
 
         // This code is just to test out the graphing functionality
 //        lineChart = findViewById(R.id.lineChart);
@@ -82,78 +85,5 @@ public class Dashboard extends AppCompatActivity {
 //        lineChart.setData(lineData);
 //
 //        lineChart.invalidate();
-
-        // This code is just to do initial testing on Financial Data API
-        try {
-            getData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void getData() throws IOException {
-        RunnableThread connectToNetworkThreadRunnable = new RunnableThread();
-        new Thread(connectToNetworkThreadRunnable).start();
-    }
-
-    private String convertStreamToString(InputStream is) {
-        Scanner s = new Scanner(is);
-        return s.useDelimiter("\\A").next();
-    }
-
-    class RunnableThread implements Runnable {
-        @Override
-        public void run() {
-            URL url = null;
-            try {
-                url = new URL("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=demo");
-            } catch (MalformedURLException e) {
-                Log.e("Network Error", e.getMessage());  // Replace RuntimeException
-
-            }
-            HttpURLConnection conn = null;
-            try {
-                conn = (HttpURLConnection) url.openConnection();
-            } catch (IOException e) {
-                Log.e("Network Error", e.getMessage());  // Replace RuntimeException
-
-            }
-            try {
-                conn.setRequestMethod("GET");
-            } catch (ProtocolException e) {
-                Log.e("Network Error", e.getMessage());  // Replace RuntimeException
-
-            }
-            conn.setDoInput(true);
-            try {
-                conn.connect();
-            } catch (IOException e) {
-                Log.e("Network Error", e.getMessage());  // Replace RuntimeException
-            }
-            InputStream inputStream = null;
-            try {
-                inputStream = conn.getInputStream();
-            } catch (IOException e) {
-                Log.e("Network Error", e.getMessage());  // Replace RuntimeException
-
-            }
-            final String resp = convertStreamToString(inputStream);
-            JSONObject responseObject = null;
-            try {
-                responseObject = new JSONObject(resp);
-            } catch (JSONException e) {
-                Log.d("", e.toString());
-            }
-            Log.d("", "responseObject: " + responseObject);
-            Log.d("", "responseObject Class:" + responseObject.getClass());
-            try {
-                Log.d("","Meta Data: " + responseObject.get("Meta Data").getClass());
-                JSONObject metaData = (JSONObject) responseObject.get("Meta Data");
-                Log.d("", "Information: " + metaData.get("1. Information"));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            conn.disconnect();
-        }
     }
 }
