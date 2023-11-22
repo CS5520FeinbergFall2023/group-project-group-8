@@ -2,6 +2,14 @@ package edu.northeastern.group_project_group_8;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,23 +24,95 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Scanner;
 
 public class PortfolioData {
     ArrayList<String> positions;
     ArrayList<PositionPrice> positionPrices;
     ArrayList<Price> priceSumsByDate;
+    private DatabaseReference mDatabaseAccounts;
+    private DatabaseReference mDatabaseHoldings;
+    String user;
+    ArrayList<String> accounts;
+    ArrayList<Holding> holdings;
 
-    public PortfolioData(ArrayList<String> positions) {
+    public PortfolioData(ArrayList<String> positions, String loggedInUser) {
+        this.user = loggedInUser;
         this.positions = positions;
         this.positionPrices = new ArrayList<PositionPrice>();
         this.priceSumsByDate = new ArrayList<Price>();
+        this.mDatabaseAccounts = FirebaseDatabase.getInstance().getReference().child("accounts");
+        this.mDatabaseHoldings = FirebaseDatabase.getInstance().getReference().child("holdings");
+        this.accounts = new ArrayList<String>();
+        this.holdings = new ArrayList<Holding>();
+
+        getAccountData();
+        getHoldingsData();
 
         try {
             getAPIData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void getHoldingsData() {
+        mDatabaseHoldings.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("", "snapshot:" + snapshot.getValue());
+                if (snapshot.getValue() != null) {
+                    Map<String, Object> myHoldingsMap = (Map<String, Object>) snapshot.getValue();
+                    Log.d("", "Keys: " + myHoldingsMap.keySet());
+                    Log.d("", "holdings1: " + myHoldingsMap.get("holdings1"));
+                    for (String key : myHoldingsMap.keySet()) {
+                        HashMap<String, Object> currentHolding = (HashMap<String, Object>) myHoldingsMap.get(key);
+                        String currentAcct = (String) currentHolding.get("account");
+                        Log.d("", "currentAcct: " + currentAcct);
+                        String currentAsset = (String) currentHolding.get("asset");
+                        Log.d("", "currentasset: " + currentAsset);
+                        long currentCount = (long) currentHolding.get("count");
+                        Log.d("", "currentCount: " + currentCount);
+                        LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
+                        Log.d("", "currentStartDate: " + currentStartDate);
+                        LocalDate currentEndDate = null;
+                        Log.d("", "endDate: " + currentHolding.get("endDate"));
+                        if (currentHolding.get("endDate").equals(-1)) {
+                            currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
+                            Log.d("", "currentEndDate: " + currentEndDate);
+                        }
+                        holdings.add(new Holding(currentAcct, currentAsset, 1, currentStartDate, currentEndDate));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void getAccountData() {
+        mDatabaseAccounts.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Log.d("", "snapshot:" + snapshot.getValue());
+                if (snapshot.getValue()!= null) {
+                    Map<String, Object> myAccountsMap = (Map<String, Object>) snapshot.getValue();
+                    Log.d("", "Keys: " + myAccountsMap.keySet());
+                    for (String key : myAccountsMap.keySet()) {
+                        accounts.add(key);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void getAPIData() throws IOException {

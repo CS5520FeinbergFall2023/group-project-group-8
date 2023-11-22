@@ -45,7 +45,7 @@ public class Dashboard extends AppCompatActivity {
         positionList.add("IBM");
         positionList.add("IBM");
 //        positionList.add("IBM");
-        portfolioData = new PortfolioData(positionList);
+        portfolioData = new PortfolioData(positionList, loggedInUser);
         //TODO: Figure out how to wait for API call to finish before moving forward with populating this page.  Sleep() is not a viable option.
         try {
             sleep(3000);
