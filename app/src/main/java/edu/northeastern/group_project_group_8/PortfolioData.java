@@ -29,13 +29,13 @@ public class PortfolioData {
         this.priceSumsByDate = new ArrayList<Price>();
 
         try {
-            getData();
+            getAPIData();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void getData() throws IOException {
+    private void getAPIData() throws IOException {
         RunnableThread connectToNetworkThreadRunnable = new RunnableThread();
         new Thread(connectToNetworkThreadRunnable).start();
 
@@ -160,16 +160,16 @@ public class PortfolioData {
                 Price newPrice = new Price(key, sumPricesMap.get(key));
                 priceSumsByDate.add(newPrice);
             }
-//            priceSumsByDate.sort(new Comparator<Price>() {
-//                @Override
-//                public int compare(Price o1, Price o2) {
-//                    if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
-//                        return 1;
-//                    } else {
-//                        return -1;
-//                    }
-//                }
-//            });
+            priceSumsByDate.sort(new Comparator<Price>() {
+                @Override
+                public int compare(Price o1, Price o2) {
+                    if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
+                }
+            });
         }
     }
 

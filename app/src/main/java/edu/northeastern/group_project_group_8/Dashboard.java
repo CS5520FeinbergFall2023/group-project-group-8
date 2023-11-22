@@ -48,7 +48,7 @@ public class Dashboard extends AppCompatActivity {
         portfolioData = new PortfolioData(positionList);
         //TODO: Figure out how to wait for API call to finish before moving forward with populating this page.  Sleep() is not a viable option.
         try {
-            sleep(1000);
+            sleep(3000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
