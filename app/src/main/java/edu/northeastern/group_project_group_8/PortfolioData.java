@@ -36,6 +36,8 @@ public class PortfolioData {
     String user;
     ArrayList<String> accounts;
     ArrayList<Holding> holdings;
+    HashMap<String, HashMap<String, HashMap<String, Long>>> accountHoldingsByDateMap;
+
 
     public PortfolioData(ArrayList<String> positions, String loggedInUser) {
         this.user = loggedInUser;
@@ -46,14 +48,46 @@ public class PortfolioData {
         this.mDatabaseHoldings = FirebaseDatabase.getInstance().getReference().child("holdings");
         this.accounts = new ArrayList<String>();
         this.holdings = new ArrayList<Holding>();
+        this.accountHoldingsByDateMap = new HashMap<>();
 
         getAccountData();
         getHoldingsData();
+        buildPortfolio();
 
         try {
             getAPIData();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void buildPortfolio() {
+        for (String account: accounts) {
+            for (Holding holding : holdings) {
+                if (holding.account == account) {
+                    String currentAccount = holding.account;
+                    String currentAsset = holding.asset;
+                    long currentCount = holding.count;
+                    LocalDate currentStartDate = holding.startDate;
+                    LocalDate currentEndDate = LocalDate.now();
+                    if (holding.endDate != null) {
+                        currentEndDate = holding.endDate;
+                    }
+                    HashMap<String, Long> assetCount = new HashMap<>();
+                    assetCount.put(currentAsset, currentCount);
+                    if (accountHoldingsByDateMap.containsKey(currentAccount)) {
+                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date.plusDays(1)) {
+                            accountHoldingsByDateMap.get(currentAccount).put(date.toString(), assetCount);
+                        }
+                    } else {
+                        HashMap<String, HashMap<String, Long>> dateAsset = new HashMap<>();
+                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date.plusDays(1)) {
+                            dateAsset.put(date.toString(), assetCount);
+                        }
+                        accountHoldingsByDateMap.put(currentAccount, dateAsset);
+                    }
+                }
+            }
         }
     }
 
@@ -78,11 +112,16 @@ public class PortfolioData {
                         Log.d("", "currentStartDate: " + currentStartDate);
                         LocalDate currentEndDate = null;
                         Log.d("", "endDate: " + currentHolding.get("endDate"));
-                        if (currentHolding.get("endDate").equals(-1)) {
+                        if (!currentHolding.get("endDate").equals("-1")) {
                             currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
                             Log.d("", "currentEndDate: " + currentEndDate);
                         }
-                        holdings.add(new Holding(currentAcct, currentAsset, 1, currentStartDate, currentEndDate));
+                        Log.d("", "newcurrentAcct: " + currentAcct);
+                        Log.d("", "newcurrentAsset: " + currentAsset);
+                        Log.d("", "newcurrentCount: " + currentCount);
+                        Log.d("", "newcurrentStartDate: " + currentStartDate);
+                        Log.d("", "newcurrentEndDate: " + currentEndDate);
+                        holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
                     }
                 }
             }
