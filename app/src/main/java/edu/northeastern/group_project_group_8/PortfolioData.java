@@ -34,13 +34,14 @@ import java.util.Scanner;
 public class PortfolioData {
     ArrayList<String> positions;
     ArrayList<PositionPrice> positionPrices;
+    HashMap<String, HashMap<LocalDate, Double>> positionPricesV2;
     ArrayList<Price> priceSumsByDate;
     private DatabaseReference mDatabaseAccounts;
     private DatabaseReference mDatabaseHoldings;
     String user;
     ArrayList<String> accounts;
     ArrayList<Holding> holdings;
-    HashMap<String, HashMap<String, HashMap<String, Long>>> accountHoldingsByDateMap;
+    HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
 
 
     public PortfolioData(ArrayList<String> positions, String loggedInUser) throws InterruptedException {
@@ -53,6 +54,7 @@ public class PortfolioData {
         this.accounts = new ArrayList<String>();
         this.holdings = new ArrayList<Holding>();
         this.accountHoldingsByDateMap = new HashMap<>();
+        this.positionPricesV2 = new HashMap<>();
 
         getAccountData();
 
@@ -85,14 +87,14 @@ public class PortfolioData {
                         Log.d("", "Account already in map");
                         for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
 //                            Log.d("", "Date: " + date);
-                            accountHoldingsByDateMap.get(currentAccount).put(date.toString(), assetCount);
+                            accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
                         }
                     } else {
                         Log.d("", "Account NOT already in map");
-                        HashMap<String, HashMap<String, Long>> dateAsset = new HashMap<>();
+                        HashMap<LocalDate, HashMap<String, Long>> dateAsset = new HashMap<>();
                         for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
 //                            Log.d("", "Date: " + date);
-                            dateAsset.put(date.toString(), assetCount);
+                            dateAsset.put(date, assetCount);
                         }
                         accountHoldingsByDateMap.put(currentAccount, dateAsset);
                     }
@@ -104,7 +106,7 @@ public class PortfolioData {
         Log.d("", "Other accountHoldingsByDateMap Size: " + accountHoldingsByDateMap.size());
         for (String key : accountHoldingsByDateMap.keySet()) {
             Log.d("", "otherAccountHoldingsByDateMap Key: " + key);
-            for (String key2 : accountHoldingsByDateMap.get(key).keySet()) {
+            for (LocalDate key2 : accountHoldingsByDateMap.get(key).keySet()) {
                 Log.d("", "Key within account: " + key2);
                 for (String key3 : accountHoldingsByDateMap.get(key).get(key2).keySet()) {
                     Log.d("", "Key within date: " + key3);
@@ -194,6 +196,7 @@ public class PortfolioData {
             for (String position : positions) {
                 String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
                 URL url = null;
+                String symbol = null;
                 try {
                     url = new URL(urlString);
                     Log.d("", "urlString");
@@ -240,6 +243,8 @@ public class PortfolioData {
                 try {
                     JSONObject metaData = (JSONObject) responseObject.get("Meta Data");
                     Log.d("", "Meta Data: " + metaData);
+                    symbol = (String) metaData.get("2. Symbol");
+                    Log.d("", "Symbol: " + symbol);
                 } catch (JSONException e) {
                     Log.d("", "Failed trying to get meta Data.");
                     conn.disconnect();
@@ -258,7 +263,8 @@ public class PortfolioData {
                 Iterator<String> keys = timeSeriesData.keys();
                 LocalDate currentDate = null;
                 Double currentPrice = null;
-                PositionPrice currentPositionPrice = new PositionPrice("IBM");
+                PositionPrice currentPositionPrice = new PositionPrice(symbol);
+                HashMap<LocalDate, Double> pricesMap = new HashMap<>();
                 while (keys.hasNext()) {
                     String key = keys.next();
                     try {
@@ -268,10 +274,22 @@ public class PortfolioData {
                         currentPrice = Double.parseDouble((String) currentData.get("4. close"));
 //                        Log.d("",currentDate+": "+currentPrice);
                         currentPositionPrice.prices.add(new Price(currentDate, currentPrice));
+                        // New way of doing things with a map
+                        //TODO: need to only add if within range of ownership and add based on number of shares owned
+                        pricesMap.put(currentDate, currentPrice);
                     } catch (JSONException e) {
                         Log.d("", "Failed trying to iterate through time series data");
                         conn.disconnect();
                         throw new RuntimeException(e);
+                    }
+                }
+                positionPricesV2.put(symbol, pricesMap);
+                Log.d("", "Prices Map: ");
+                for (String key : positionPricesV2.keySet()) {
+                    Log.d("", "Symbol: " + key);
+                    for (LocalDate key2: positionPricesV2.get(key).keySet()) {
+                        Log.d("", "Date: " + key2);
+                        Log.d("", "Price: " + positionPricesV2.get(key).get(key2));
                     }
                 }
 //                for (int i = 0; i < currentPositionPrice.prices.size(); i++) {
@@ -292,6 +310,7 @@ public class PortfolioData {
                 conn.disconnect();
             }
             HashMap<LocalDate, Double> sumPricesMap = new HashMap<LocalDate, Double>();
+            HashMap<LocalDate, Double> sumPricesMapV2 = new HashMap<LocalDate, Double>();
             for (PositionPrice positionPrice : positionPrices) {
                 for (Price price : positionPrice.prices) {
                     if (!sumPricesMap.containsKey(price.date)) {
@@ -303,7 +322,20 @@ public class PortfolioData {
                     }
                 }
             }
-            for (LocalDate key : sumPricesMap.keySet()) {
+            // New way of doing things with a map
+            for (String symbolKey : positionPricesV2.keySet()) {
+                for (LocalDate dateKey : positionPricesV2.get(symbolKey).keySet()) {
+                    if (!sumPricesMapV2.containsKey(dateKey)) {
+                        sumPricesMapV2.put(dateKey, positionPricesV2.get(symbolKey).get(dateKey));
+                    } else {
+                        Double temp = sumPricesMapV2.get(dateKey);
+                        temp += positionPricesV2.get(symbolKey).get(dateKey);
+                        sumPricesMapV2.put(dateKey, temp);
+                    }
+                }
+            }
+            // Edited for new way of doing things with map
+            for (LocalDate key : sumPricesMapV2.keySet()) {
                 Price newPrice = new Price(key, sumPricesMap.get(key));
                 priceSumsByDate.add(newPrice);
             }
