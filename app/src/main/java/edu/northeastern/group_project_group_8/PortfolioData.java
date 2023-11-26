@@ -56,12 +56,6 @@ public class PortfolioData {
 
         getAccountData();
 
-//        try {
-//            getAPIData();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
     }
 
     private void buildPortfolio() {
@@ -118,10 +112,14 @@ public class PortfolioData {
                 }
             }
         }
+        try {
+            getAPIData();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void getHoldingsData() {
-
         mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
