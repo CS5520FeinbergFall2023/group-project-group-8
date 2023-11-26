@@ -4,6 +4,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +28,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class PortfolioData {
@@ -39,7 +43,7 @@ public class PortfolioData {
     HashMap<String, HashMap<String, HashMap<String, Long>>> accountHoldingsByDateMap;
 
 
-    public PortfolioData(ArrayList<String> positions, String loggedInUser) {
+    public PortfolioData(ArrayList<String> positions, String loggedInUser) throws InterruptedException {
         this.user = loggedInUser;
         this.positions = positions;
         this.positionPrices = new ArrayList<PositionPrice>();
@@ -51,37 +55,49 @@ public class PortfolioData {
         this.accountHoldingsByDateMap = new HashMap<>();
 
         getAccountData();
-        getHoldingsData();
-        buildPortfolio();
 
-        try {
-            getAPIData();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            getAPIData();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
     }
 
     private void buildPortfolio() {
         for (String account: accounts) {
+            Log.d("", "account: " + account);
+            Log.d("", "Holdings length in buildPortfolio: " + holdings.size());
             for (Holding holding : holdings) {
-                if (holding.account == account) {
+                Log.d("", "holding.account: " + holding.account);
+                Log.d("", "account: " + account);
+                if (Objects.equals(holding.account, account)) {
                     String currentAccount = holding.account;
+                    Log.d("", "currentAccount: " + currentAccount);
                     String currentAsset = holding.asset;
+                    Log.d("", "currentAsset: " + currentAsset);
                     long currentCount = holding.count;
+                    Log.d("", "currentCount: " + currentCount);
                     LocalDate currentStartDate = holding.startDate;
+                    Log.d("", "currentStartDate: " + currentStartDate);
                     LocalDate currentEndDate = LocalDate.now();
                     if (holding.endDate != null) {
                         currentEndDate = holding.endDate;
                     }
+                    Log.d("", "currentEndDate: " + currentEndDate);
                     HashMap<String, Long> assetCount = new HashMap<>();
                     assetCount.put(currentAsset, currentCount);
                     if (accountHoldingsByDateMap.containsKey(currentAccount)) {
-                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date.plusDays(1)) {
+                        Log.d("", "Account already in map");
+                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
+//                            Log.d("", "Date: " + date);
                             accountHoldingsByDateMap.get(currentAccount).put(date.toString(), assetCount);
                         }
                     } else {
+                        Log.d("", "Account NOT already in map");
                         HashMap<String, HashMap<String, Long>> dateAsset = new HashMap<>();
-                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date.plusDays(1)) {
+                        for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
+//                            Log.d("", "Date: " + date);
                             dateAsset.put(date.toString(), assetCount);
                         }
                         accountHoldingsByDateMap.put(currentAccount, dateAsset);
@@ -89,12 +105,27 @@ public class PortfolioData {
                 }
             }
         }
+        Log.d("", "Done Building Portfolio!");
+        Log.d("", "Other Now logging accountHoldingsByDateMap");
+        Log.d("", "Other accountHoldingsByDateMap Size: " + accountHoldingsByDateMap.size());
+        for (String key : accountHoldingsByDateMap.keySet()) {
+            Log.d("", "otherAccountHoldingsByDateMap Key: " + key);
+            for (String key2 : accountHoldingsByDateMap.get(key).keySet()) {
+                Log.d("", "Key within account: " + key2);
+                for (String key3 : accountHoldingsByDateMap.get(key).get(key2).keySet()) {
+                    Log.d("", "Key within date: " + key3);
+                    Log.d("", "Value: " + accountHoldingsByDateMap.get(key).get(key2).get(key3));
+                }
+            }
+        }
     }
 
     private void getHoldingsData() {
-        mDatabaseHoldings.addValueEventListener(new ValueEventListener() {
+
+        mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                DataSnapshot snapshot = task.getResult();
                 Log.d("", "snapshot:" + snapshot.getValue());
                 if (snapshot.getValue() != null) {
                     Map<String, Object> myHoldingsMap = (Map<String, Object>) snapshot.getValue();
@@ -123,33 +154,32 @@ public class PortfolioData {
                         Log.d("", "newcurrentEndDate: " + currentEndDate);
                         holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
                     }
+                    Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
+                    buildPortfolio();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
 
     private void getAccountData() {
-        mDatabaseAccounts.addValueEventListener(new ValueEventListener() {
+        Log.d("", "Getting account data");
+        mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Log.d("", "snapshot:" + snapshot.getValue());
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                DataSnapshot snapshot = task.getResult();
+                Log.d("", "Account snapshot:" + snapshot.getValue());
                 if (snapshot.getValue()!= null) {
                     Map<String, Object> myAccountsMap = (Map<String, Object>) snapshot.getValue();
-                    Log.d("", "Keys: " + myAccountsMap.keySet());
+                    Log.d("", "Account Keys: " + myAccountsMap.keySet());
+                    accounts.clear();
                     for (String key : myAccountsMap.keySet()) {
                         accounts.add(key);
                     }
+                    for (String account : accounts) {
+                        Log.d("", "Account while getting accounts: " + account);
+                    }
+                    getHoldingsData();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
