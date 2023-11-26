@@ -5,13 +5,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,8 +33,8 @@ public class PortfolioData {
     ArrayList<PositionPrice> positionPrices;
     HashMap<String, HashMap<LocalDate, Double>> positionPricesV2;
     ArrayList<Price> priceSumsByDate;
-    private DatabaseReference mDatabaseAccounts;
-    private DatabaseReference mDatabaseHoldings;
+    private final DatabaseReference mDatabaseAccounts;
+    private final DatabaseReference mDatabaseHoldings;
     String user;
     ArrayList<String> accounts;
     ArrayList<Holding> holdings;
@@ -55,12 +52,14 @@ public class PortfolioData {
         this.holdings = new ArrayList<Holding>();
         this.accountHoldingsByDateMap = new HashMap<>();
         this.positionPricesV2 = new HashMap<>();
+        Log.d("", "Current Thread_inPortfolioData: " + Thread.currentThread().toString());
 
         getAccountData();
 
     }
 
     private void buildPortfolio() {
+        Log.d("", "Current Thread_inBuildPortfolio: " + Thread.currentThread().toString());
         for (String account: accounts) {
             Log.d("", "account: " + account);
             Log.d("", "Holdings length in buildPortfolio: " + holdings.size());
@@ -118,6 +117,8 @@ public class PortfolioData {
             getAPIData();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -125,6 +126,7 @@ public class PortfolioData {
         mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("", "Current Thread_inGetHoldingsDataListener: " + Thread.currentThread().toString());
                 DataSnapshot snapshot = task.getResult();
                 Log.d("", "snapshot:" + snapshot.getValue());
                 if (snapshot.getValue() != null) {
@@ -163,9 +165,11 @@ public class PortfolioData {
 
     private void getAccountData() {
         Log.d("", "Getting account data");
+        Log.d("", "Current Thread_inGetAccountData: " + Thread.currentThread().toString());
         mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("", "Current Thread_inGetAccountDataListener: " + Thread.currentThread().toString());
                 DataSnapshot snapshot = task.getResult();
                 Log.d("", "Account snapshot:" + snapshot.getValue());
                 if (snapshot.getValue()!= null) {
@@ -184,10 +188,11 @@ public class PortfolioData {
         });
     }
 
-    private void getAPIData() throws IOException {
+    private void getAPIData() throws IOException, InterruptedException {
         RunnableThread connectToNetworkThreadRunnable = new RunnableThread();
-        new Thread(connectToNetworkThreadRunnable).start();
-
+        Thread t1 = new Thread(connectToNetworkThreadRunnable);
+        t1.start();
+        t1.join();
     }
 
     class RunnableThread implements Runnable {
