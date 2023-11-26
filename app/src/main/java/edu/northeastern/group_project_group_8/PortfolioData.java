@@ -275,8 +275,13 @@ public class PortfolioData {
 //                        Log.d("",currentDate+": "+currentPrice);
                         currentPositionPrice.prices.add(new Price(currentDate, currentPrice));
                         // New way of doing things with a map
-                        //TODO: need to only add if within range of ownership and add based on number of shares owned
-                        pricesMap.put(currentDate, currentPrice);
+                        for (String accountKey : accountHoldingsByDateMap.keySet()) {
+                            if (accountHoldingsByDateMap.get(accountKey).containsKey(currentDate)) {
+                                if (accountHoldingsByDateMap.get(accountKey).get(currentDate).containsKey(symbol)) {
+                                    pricesMap.put(currentDate, currentPrice);
+                                }
+                            }
+                        }
                     } catch (JSONException e) {
                         Log.d("", "Failed trying to iterate through time series data");
                         conn.disconnect();
@@ -323,20 +328,44 @@ public class PortfolioData {
                 }
             }
             // New way of doing things with a map
-            for (String symbolKey : positionPricesV2.keySet()) {
-                for (LocalDate dateKey : positionPricesV2.get(symbolKey).keySet()) {
-                    if (!sumPricesMapV2.containsKey(dateKey)) {
-                        sumPricesMapV2.put(dateKey, positionPricesV2.get(symbolKey).get(dateKey));
-                    } else {
-                        Double temp = sumPricesMapV2.get(dateKey);
-                        temp += positionPricesV2.get(symbolKey).get(dateKey);
-                        sumPricesMapV2.put(dateKey, temp);
+            //TODO: need to only add if within range of ownership and add based on number of shares owned
+            for (String accountKey : accountHoldingsByDateMap.keySet()) {
+                for (LocalDate dateKey : accountHoldingsByDateMap.get(accountKey).keySet()) {
+                    for (String assetKey : accountHoldingsByDateMap.get(accountKey).get(dateKey).keySet()) {
+                        if (!sumPricesMapV2.containsKey(dateKey)) {
+                            Log.d("", "Account: " + accountKey);
+                            Log.d("", "Date: " + dateKey);
+                            Log.d("", "Asset: " + assetKey);
+                            Log.d("", "Count: " + accountHoldingsByDateMap.get(accountKey).get(dateKey).get(assetKey));
+                            Log.d("", "Price: " + positionPricesV2.get(assetKey).get(dateKey));
+                            if (positionPricesV2.get(assetKey).containsKey(dateKey)) {
+                                sumPricesMapV2.put(dateKey, positionPricesV2.get(assetKey).get(dateKey) * accountHoldingsByDateMap.get(accountKey).get(dateKey).get(assetKey));
+                            }
+                        } else {
+                            if (positionPricesV2.get(assetKey).containsKey(dateKey)) {
+                                Double temp = sumPricesMapV2.get(dateKey);
+                                temp += positionPricesV2.get(assetKey).get(dateKey) * accountHoldingsByDateMap.get(accountKey).get(dateKey).get(assetKey);
+                                sumPricesMapV2.put(dateKey, temp);
+                            }
+                        }
                     }
                 }
             }
+
+//            for (String symbolKey : positionPricesV2.keySet()) {
+//                for (LocalDate dateKey : positionPricesV2.get(symbolKey).keySet()) {
+//                    if (!sumPricesMapV2.containsKey(dateKey)) {
+//                        sumPricesMapV2.put(dateKey, positionPricesV2.get(symbolKey).get(dateKey));
+//                    } else {
+//                        Double temp = sumPricesMapV2.get(dateKey);
+//                        temp += positionPricesV2.get(symbolKey).get(dateKey);
+//                        sumPricesMapV2.put(dateKey, temp);
+//                    }
+//                }
+//            }
             // Edited for new way of doing things with map
             for (LocalDate key : sumPricesMapV2.keySet()) {
-                Price newPrice = new Price(key, sumPricesMap.get(key));
+                Price newPrice = new Price(key, sumPricesMapV2.get(key));
                 priceSumsByDate.add(newPrice);
             }
             priceSumsByDate.sort(new Comparator<Price>() {
@@ -349,6 +378,10 @@ public class PortfolioData {
                     }
                 }
             });
+            for (Price price : priceSumsByDate) {
+                Log.d("", "Date: " + price.date);
+                Log.d("", "Value: " + price.price);
+            }
         }
     }
 
