@@ -139,25 +139,27 @@ public class Dashboard extends AppCompatActivity {
                     for (String key : myHoldingsMap.keySet()) {
                         HashMap<String, Object> currentHolding = (HashMap<String, Object>) myHoldingsMap.get(key);
                         String currentAcct = (String) currentHolding.get("account");
-                        Log.d("", "currentAcct: " + currentAcct);
-                        String currentAsset = (String) currentHolding.get("asset");
-                        Log.d("", "currentasset: " + currentAsset);
-                        long currentCount = (long) currentHolding.get("count");
-                        Log.d("", "currentCount: " + currentCount);
-                        LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
-                        Log.d("", "currentStartDate: " + currentStartDate);
-                        LocalDate currentEndDate = null;
-                        Log.d("", "endDate: " + currentHolding.get("endDate"));
-                        if (!currentHolding.get("endDate").equals("-1")) {
-                            currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
-                            Log.d("", "currentEndDate: " + currentEndDate);
+                        if (accounts.contains(currentHolding.get("account"))) {
+                            Log.d("", "currentAcct: " + currentAcct);
+                            String currentAsset = (String) currentHolding.get("asset");
+                            Log.d("", "currentasset: " + currentAsset);
+                            long currentCount = (long) currentHolding.get("count");
+                            Log.d("", "currentCount: " + currentCount);
+                            LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
+                            Log.d("", "currentStartDate: " + currentStartDate);
+                            LocalDate currentEndDate = null;
+                            Log.d("", "endDate: " + currentHolding.get("endDate"));
+                            if (!currentHolding.get("endDate").equals("-1")) {
+                                currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
+                                Log.d("", "currentEndDate: " + currentEndDate);
+                            }
+                            Log.d("", "newcurrentAcct: " + currentAcct);
+                            Log.d("", "newcurrentAsset: " + currentAsset);
+                            Log.d("", "newcurrentCount: " + currentCount);
+                            Log.d("", "newcurrentStartDate: " + currentStartDate);
+                            Log.d("", "newcurrentEndDate: " + currentEndDate);
+                            holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
                         }
-                        Log.d("", "newcurrentAcct: " + currentAcct);
-                        Log.d("", "newcurrentAsset: " + currentAsset);
-                        Log.d("", "newcurrentCount: " + currentCount);
-                        Log.d("", "newcurrentStartDate: " + currentStartDate);
-                        Log.d("", "newcurrentEndDate: " + currentEndDate);
-                        holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
                     }
                     Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
                     buildPortfolio();
