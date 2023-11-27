@@ -386,36 +386,9 @@ public class Dashboard extends AppCompatActivity {
                         Log.d("", "Price: " + positionPricesV2.get(key).get(key2));
                     }
                 }
-//                for (int i = 0; i < currentPositionPrice.prices.size(); i++) {
-//                    Log.d("", "Date: " + currentPositionPrice.prices.get(i).date + ", Price: " + currentPositionPrice.prices.get(i).price);
-//                }
-//                currentPositionPrice.prices.sort(new Comparator<Price>() {
-//                    @Override
-//                    public int compare(Price o1, Price o2) {
-//                        if (o1.date.toEpochDay() > o2.date.toEpochDay()) {
-//                            return 1;
-//                        } else {
-//                            return -1;
-//                        }
-//                    }
-//                });
-                positionPrices.add(currentPositionPrice);
-                Log.d("", "positionPrices Length: " + positionPrices.size());
                 conn.disconnect();
             }
-            HashMap<LocalDate, Double> sumPricesMap = new HashMap<LocalDate, Double>();
             HashMap<LocalDate, Double> sumPricesMapV2 = new HashMap<LocalDate, Double>();
-            for (PositionPrice positionPrice : positionPrices) {
-                for (Price price : positionPrice.prices) {
-                    if (!sumPricesMap.containsKey(price.date)) {
-                        sumPricesMap.put(price.date, price.price);
-                    } else {
-                        Double temp = sumPricesMap.get(price.date);
-                        temp += price.price;
-                        sumPricesMap.put(price.date, temp);
-                    }
-                }
-            }
             // New way of doing things with a map
             for (String accountKey : accountHoldingsByDateMap.keySet()) {
                 for (LocalDate dateKey : accountHoldingsByDateMap.get(accountKey).keySet()) {
@@ -439,18 +412,6 @@ public class Dashboard extends AppCompatActivity {
                     }
                 }
             }
-
-//            for (String symbolKey : positionPricesV2.keySet()) {
-//                for (LocalDate dateKey : positionPricesV2.get(symbolKey).keySet()) {
-//                    if (!sumPricesMapV2.containsKey(dateKey)) {
-//                        sumPricesMapV2.put(dateKey, positionPricesV2.get(symbolKey).get(dateKey));
-//                    } else {
-//                        Double temp = sumPricesMapV2.get(dateKey);
-//                        temp += positionPricesV2.get(symbolKey).get(dateKey);
-//                        sumPricesMapV2.put(dateKey, temp);
-//                    }
-//                }
-//            }
             // Edited for new way of doing things with map
             for (LocalDate key : sumPricesMapV2.keySet()) {
                 Price newPrice = new Price(key, sumPricesMapV2.get(key));
