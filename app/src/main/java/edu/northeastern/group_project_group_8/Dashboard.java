@@ -111,7 +111,10 @@ public class Dashboard extends AppCompatActivity {
                     Log.d("", "Account Keys: " + myAccountsMap.keySet());
                     accounts.clear();
                     for (String key : myAccountsMap.keySet()) {
-                        accounts.add(key);
+                        Map<String, String> account = (Map<String, String>) myAccountsMap.get(key);
+                        if (Objects.equals(account.get("owner"), loggedInUser)) {
+                            accounts.add(key);
+                        }
                     }
                     for (String account : accounts) {
                         Log.d("", "Account while getting accounts: " + account);
@@ -233,7 +236,6 @@ public class Dashboard extends AppCompatActivity {
         Thread t1 = new Thread(connectToNetworkThreadRunnable);
         t1.start();
         t1.join();
-//        Thread.sleep(1000);
         Log.d("", "Logging -------------------------------------------------------------from Dashboard");
         for (Price price : priceSumsByDate) {
             Log.d("", price.date + " called from Dashboard: " + price.price);
