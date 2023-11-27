@@ -97,7 +97,71 @@ public class Dashboard extends AppCompatActivity {
         getAccountData();
     }
 
+    private void getAccountData() {
+        Log.d("", "Getting account data");
+        Log.d("", "Current Thread_inGetAccountData: " + Thread.currentThread().toString());
+        mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("", "Current Thread_inGetAccountDataListener: " + Thread.currentThread().toString());
+                DataSnapshot snapshot = task.getResult();
+                Log.d("", "Account snapshot:" + snapshot.getValue());
+                if (snapshot.getValue()!= null) {
+                    Map<String, Object> myAccountsMap = (Map<String, Object>) snapshot.getValue();
+                    Log.d("", "Account Keys: " + myAccountsMap.keySet());
+                    accounts.clear();
+                    for (String key : myAccountsMap.keySet()) {
+                        accounts.add(key);
+                    }
+                    for (String account : accounts) {
+                        Log.d("", "Account while getting accounts: " + account);
+                    }
+                    getHoldingsData();
+                }
+            }
+        });
+    }
 
+    private void getHoldingsData() {
+        mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                Log.d("", "Current Thread_inGetHoldingsDataListener: " + Thread.currentThread().toString());
+                DataSnapshot snapshot = task.getResult();
+                Log.d("", "snapshot:" + snapshot.getValue());
+                if (snapshot.getValue() != null) {
+                    Map<String, Object> myHoldingsMap = (Map<String, Object>) snapshot.getValue();
+                    Log.d("", "Keys: " + myHoldingsMap.keySet());
+                    Log.d("", "holdings1: " + myHoldingsMap.get("holdings1"));
+                    for (String key : myHoldingsMap.keySet()) {
+                        HashMap<String, Object> currentHolding = (HashMap<String, Object>) myHoldingsMap.get(key);
+                        String currentAcct = (String) currentHolding.get("account");
+                        Log.d("", "currentAcct: " + currentAcct);
+                        String currentAsset = (String) currentHolding.get("asset");
+                        Log.d("", "currentasset: " + currentAsset);
+                        long currentCount = (long) currentHolding.get("count");
+                        Log.d("", "currentCount: " + currentCount);
+                        LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
+                        Log.d("", "currentStartDate: " + currentStartDate);
+                        LocalDate currentEndDate = null;
+                        Log.d("", "endDate: " + currentHolding.get("endDate"));
+                        if (!currentHolding.get("endDate").equals("-1")) {
+                            currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
+                            Log.d("", "currentEndDate: " + currentEndDate);
+                        }
+                        Log.d("", "newcurrentAcct: " + currentAcct);
+                        Log.d("", "newcurrentAsset: " + currentAsset);
+                        Log.d("", "newcurrentCount: " + currentCount);
+                        Log.d("", "newcurrentStartDate: " + currentStartDate);
+                        Log.d("", "newcurrentEndDate: " + currentEndDate);
+                        holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
+                    }
+                    Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
+                    buildPortfolio();
+                }
+            }
+        });
+    }
 
     // Adding functions from PortfolioData
     private void buildPortfolio() {
@@ -162,72 +226,6 @@ public class Dashboard extends AppCompatActivity {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void getHoldingsData() {
-        mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                Log.d("", "Current Thread_inGetHoldingsDataListener: " + Thread.currentThread().toString());
-                DataSnapshot snapshot = task.getResult();
-                Log.d("", "snapshot:" + snapshot.getValue());
-                if (snapshot.getValue() != null) {
-                    Map<String, Object> myHoldingsMap = (Map<String, Object>) snapshot.getValue();
-                    Log.d("", "Keys: " + myHoldingsMap.keySet());
-                    Log.d("", "holdings1: " + myHoldingsMap.get("holdings1"));
-                    for (String key : myHoldingsMap.keySet()) {
-                        HashMap<String, Object> currentHolding = (HashMap<String, Object>) myHoldingsMap.get(key);
-                        String currentAcct = (String) currentHolding.get("account");
-                        Log.d("", "currentAcct: " + currentAcct);
-                        String currentAsset = (String) currentHolding.get("asset");
-                        Log.d("", "currentasset: " + currentAsset);
-                        long currentCount = (long) currentHolding.get("count");
-                        Log.d("", "currentCount: " + currentCount);
-                        LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
-                        Log.d("", "currentStartDate: " + currentStartDate);
-                        LocalDate currentEndDate = null;
-                        Log.d("", "endDate: " + currentHolding.get("endDate"));
-                        if (!currentHolding.get("endDate").equals("-1")) {
-                            currentEndDate = LocalDate.parse((String) currentHolding.get("endDate"));
-                            Log.d("", "currentEndDate: " + currentEndDate);
-                        }
-                        Log.d("", "newcurrentAcct: " + currentAcct);
-                        Log.d("", "newcurrentAsset: " + currentAsset);
-                        Log.d("", "newcurrentCount: " + currentCount);
-                        Log.d("", "newcurrentStartDate: " + currentStartDate);
-                        Log.d("", "newcurrentEndDate: " + currentEndDate);
-                        holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
-                    }
-                    Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
-                    buildPortfolio();
-                }
-            }
-        });
-    }
-
-    private void getAccountData() {
-        Log.d("", "Getting account data");
-        Log.d("", "Current Thread_inGetAccountData: " + Thread.currentThread().toString());
-        mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                Log.d("", "Current Thread_inGetAccountDataListener: " + Thread.currentThread().toString());
-                DataSnapshot snapshot = task.getResult();
-                Log.d("", "Account snapshot:" + snapshot.getValue());
-                if (snapshot.getValue()!= null) {
-                    Map<String, Object> myAccountsMap = (Map<String, Object>) snapshot.getValue();
-                    Log.d("", "Account Keys: " + myAccountsMap.keySet());
-                    accounts.clear();
-                    for (String key : myAccountsMap.keySet()) {
-                        accounts.add(key);
-                    }
-                    for (String account : accounts) {
-                        Log.d("", "Account while getting accounts: " + account);
-                    }
-                    getHoldingsData();
-                }
-            }
-        });
     }
 
     private void getAPIData() throws IOException, InterruptedException {
