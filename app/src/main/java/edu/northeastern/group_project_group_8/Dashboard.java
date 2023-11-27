@@ -50,7 +50,6 @@ public class Dashboard extends AppCompatActivity {
     private LineChart lineChart;
     private List<String> xValues;
     PortfolioData portfolioData;
-    ArrayList<String> positionList;
 
     // Attributes from PortfolioData********
     ArrayList<String> positions;
@@ -77,13 +76,8 @@ public class Dashboard extends AppCompatActivity {
         loggedInUser = extras.getString("loggedInUsername");
         Log.d("", "User: " + loggedInUser);
 
-        positionList = new ArrayList<String>();
-        positionList.add("IBM");
-//        positionList.add("IBM");
-//        positionList.add("IBM");
-
         // Initializations from PortfolioData**********
-        positions = positionList;
+        positions = new ArrayList<>();
         positionPrices = new ArrayList<PositionPrice>();
         priceSumsByDate = new ArrayList<Price>();
         mDatabaseAccounts = FirebaseDatabase.getInstance().getReference().child("accounts");
@@ -143,6 +137,7 @@ public class Dashboard extends AppCompatActivity {
                             Log.d("", "currentAcct: " + currentAcct);
                             String currentAsset = (String) currentHolding.get("asset");
                             Log.d("", "currentasset: " + currentAsset);
+                            positions.add(currentAsset);
                             long currentCount = (long) currentHolding.get("count");
                             Log.d("", "currentCount: " + currentCount);
                             LocalDate currentStartDate = LocalDate.parse((String) currentHolding.get("startDate"));
