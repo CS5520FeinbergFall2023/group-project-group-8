@@ -54,7 +54,8 @@ public class LoginActivity extends AppCompatActivity {
                         User newUser = new User(loggedInUsername);
                         mDatabase.child(newUser.getUsername()).setValue(newUser);
                     }
-                    launchUserDashboard();
+                    //launchUserDashboard();
+                    launchAccountDetailsPage();
                 }
             }
         });
@@ -88,5 +89,10 @@ public class LoginActivity extends AppCompatActivity {
         Intent profileIntent = new Intent(this, Dashboard.class);
         profileIntent.putExtra("loggedInUsername", loggedInUsername);
         startActivity(profileIntent);
+    }
+
+    public void launchAccountDetailsPage() {
+        Intent accountDetailsPageIntent = new Intent(this, AccountDetailsPage.class);
+        startActivity(accountDetailsPageIntent);
     }
 }
