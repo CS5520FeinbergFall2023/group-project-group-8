@@ -165,6 +165,7 @@ public class Dashboard extends AppCompatActivity {
 
     // Adding functions from PortfolioData
     private void buildPortfolio() {
+        //TODO: the fix will most likely be somewhere in here
         Log.d("", "Current Thread_inBuildPortfolio: " + Thread.currentThread().toString());
         for (String account: accounts) {
             Log.d("", "account: " + account);
@@ -192,7 +193,18 @@ public class Dashboard extends AppCompatActivity {
                         Log.d("", "Account already in map");
                         for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
 //                            Log.d("", "Date: " + date);
-                            accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
+                            if (accountHoldingsByDateMap.get(currentAccount).containsKey(date) && accountHoldingsByDateMap.get(currentAccount).get(date).containsKey(currentAsset)) {
+                                accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
+                            } else {
+                                if (accountHoldingsByDateMap.get(currentAccount).containsKey(date)) {
+                                    long temp = accountHoldingsByDateMap.get(currentAccount).get(date).get(currentAsset);
+                                    temp += currentCount;
+                                } else {
+                                    accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
+                                }
+                            }
+
+
                         }
                     } else {
                         Log.d("", "Account NOT already in map");
