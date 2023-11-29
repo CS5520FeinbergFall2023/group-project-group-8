@@ -281,24 +281,38 @@ public class Dashboard extends AppCompatActivity {
         description.setPosition(250f, 150f);
         lineChart.setDescription(description);
         lineChart.getAxisRight().setDrawLabels(false);
-        ArrayList<LocalDate> portfolioDates = new ArrayList<>();
+        ArrayList<String> portfolioDates = new ArrayList<>();
         for (Price date: priceSumsByDate) {
-            portfolioDates.add(date.date);
+            portfolioDates.add(date.date.toString());
         }
-        xValues = Arrays.asList(String.valueOf(portfolioDates));
+//        xValues = Arrays.asList(String.valueOf(portfolioDates));
+        xValues = portfolioDates;
+        ArrayList<String> newXValues = new ArrayList<>();
+        int xSize = xValues.size();
+        Log.d("", "xSize: " + xSize);
+        int interval = xSize / 4;
+        for (int i = 0; i < xSize; i++) {
+            if ((i+1)%interval == 0) {
+                newXValues.add(xValues.get(i));
+            }
+        }
+        Log.d("", "newXValues Size: " + newXValues.size());
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(xValues));
-        xAxis.setLabelCount(portfolioDates.size());
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(newXValues));
+        xAxis.setLabelCount(newXValues.size());
         xAxis.setGranularity(1f);
+//        xAxis.setDrawLabels(false);
+        xAxis.setDrawGridLines(false);
 
         YAxis yAxis = lineChart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
-        yAxis.setAxisMaximum(500f);
+//        yAxis.setAxisMaximum(500f);
         yAxis.setAxisLineWidth(2f);
         yAxis.setAxisLineColor(Color.BLACK);
         yAxis.setLabelCount(10);
+        yAxis.setDrawGridLines(false);
 
         List<Entry> entries1 = new ArrayList<>();
         for (int i = 0; i < priceSumsByDate.size(); i++) {
@@ -312,6 +326,7 @@ public class Dashboard extends AppCompatActivity {
         LineData lineData = new LineData(dataSet1);
 
         lineChart.setData(lineData);
+        lineChart.setAutoScaleMinMaxEnabled(true);
 
         lineChart.invalidate();
     }
