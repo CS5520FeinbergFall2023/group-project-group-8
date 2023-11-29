@@ -52,15 +52,22 @@ public class Dashboard extends AppCompatActivity {
     PortfolioData portfolioData;
 
     // Attributes from PortfolioData********
+    // List of positions/assets in the portfolio
     ArrayList<String> positions;
-    ArrayList<PositionPrice> positionPrices;
+    // Map of asset name to a map of date to price. Gives us a map of all asset prices across all dates for all assets in the portfolio
     HashMap<String, HashMap<LocalDate, Double>> positionPricesV2;
+    // List of the sums of the values of all assets across the portfolio on each date.  This is what gets graphed to the screen.
     ArrayList<Price> priceSumsByDate;
     private DatabaseReference mDatabaseAccounts;
     private DatabaseReference mDatabaseHoldings;
-    String user;
+    // List of all accounts in the portfolio
     ArrayList<String> accounts;
+    // List of all holdings across all accounts in the portfolio.  This is pulled directly from the DB.
     ArrayList<Holding> holdings;
+    // A map that gives the number of each asset held on each date in each account.
+    // So we map thw account name to a map of dates, which are each mapped to a map
+    // of asset names, which each have a count value denoting how many of that asset
+    // were held on that date in that account.  This is used to build priceSumsByDate.
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
     // *************************************
 
@@ -78,7 +85,6 @@ public class Dashboard extends AppCompatActivity {
 
         // Initializations from PortfolioData**********
         positions = new ArrayList<>();
-        positionPrices = new ArrayList<PositionPrice>();
         priceSumsByDate = new ArrayList<Price>();
         mDatabaseAccounts = FirebaseDatabase.getInstance().getReference().child("accounts");
         mDatabaseHoldings = FirebaseDatabase.getInstance().getReference().child("holdings");
@@ -92,6 +98,11 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private void getAccountData() {
+        // getAccountData() goes to the DB and gets the list of accounts owned by the loggedInUser,
+        // and then calls getHoldingsData().  We need to call getHoldingsData() from the onComplete
+        // method in this function because we need to wait for the accounts data to get returned
+        // before we get the holdings data.
+
         Log.d("", "Getting account data");
         Log.d("", "Current Thread_inGetAccountData: " + Thread.currentThread().toString());
         mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
@@ -120,6 +131,9 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private void getHoldingsData() {
+        //getHoldingsData() goes to the DB and gets the holdings for any accounts in the accounts
+        // list.  It then calls buildPortfolio().
+
         mDatabaseHoldings.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
@@ -163,9 +177,13 @@ public class Dashboard extends AppCompatActivity {
         });
     }
 
-    // Adding functions from PortfolioData
     private void buildPortfolio() {
-        //TODO: the fix will most likely be somewhere in here
+        // buildPortfolio() iterates through the accounts list and holdings list to build the
+        // accountHoldingsByDateMap object, which gives us the number of shares of each asset
+        // held in each account on each date.  This is needed to get the graph of total portfolio
+        // value across all accounts by date.  Once we have this, we call getAPIData() to get
+        // the price data and graph the portfolio values over time.
+
         Log.d("", "Current Thread_inBuildPortfolio: " + Thread.currentThread().toString());
         for (String account: accounts) {
             Log.d("", "account: " + account);
@@ -203,8 +221,6 @@ public class Dashboard extends AppCompatActivity {
                                     accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
                                 }
                             }
-
-
                         }
                     } else {
                         Log.d("", "Account NOT already in map");
@@ -218,6 +234,8 @@ public class Dashboard extends AppCompatActivity {
                 }
             }
         }
+        // This is just logging to see what is in the portfolio, to make sure the function
+        // worked correctly.
         Log.d("", "Done Building Portfolio!");
         Log.d("", "Other Now logging accountHoldingsByDateMap");
         Log.d("", "Other accountHoldingsByDateMap Size: " + accountHoldingsByDateMap.size());
@@ -241,6 +259,14 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private void getAPIData() throws IOException, InterruptedException {
+        //getAPIData() calls the API for each asset to get the price history of each.
+        // This gives us a map of prices data over time for each asset, which we can then combine
+        // with the accountHoldingsByDateMap to get the total value of the portfolio across all
+        // accounts/assets on each date.  This is the priceSumsByDate list, which is what we
+        // then graph to the screen.  Graphing also takes place in this function, because we
+        // need to wait for all of the previous calls to the DB and API to succeed before we try
+        // to create the graph.  (Most of the API call logic is in the RunnableThread code below.)
+
         RunnableThread connectToNetworkThreadRunnable = new RunnableThread();
         Thread t1 = new Thread(connectToNetworkThreadRunnable);
         t1.start();
@@ -363,8 +389,14 @@ public class Dashboard extends AppCompatActivity {
                 Iterator<String> keys = timeSeriesData.keys();
                 LocalDate currentDate = null;
                 Double currentPrice = null;
+
+                // The PositionPrice object has an asset/position name and a list of prices,
+                // so we have one for each asset, and it holds all of the price history for
+                // that asset.
                 PositionPrice currentPositionPrice = new PositionPrice(symbol);
                 HashMap<LocalDate, Double> pricesMap = new HashMap<>();
+                // Here we iterate through all of the dates in the api response to get the dat
+                // and price on that date.
                 while (keys.hasNext()) {
                     String key = keys.next();
                     try {
@@ -388,7 +420,9 @@ public class Dashboard extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                 }
+                // Here we add the map of dates/prices for this asset to positionPricesV2
                 positionPricesV2.put(symbol, pricesMap);
+                // This is just some logging.
                 Log.d("", "Prices Map: ");
                 for (String key : positionPricesV2.keySet()) {
                     Log.d("", "Symbol: " + key);
@@ -399,8 +433,11 @@ public class Dashboard extends AppCompatActivity {
                 }
                 conn.disconnect();
             }
+
+            //Here is where we start building the sumPrices object. We start with a map so we can
+            // quickly populate it by date without needing to iterate through the object
+            // unnecessarily.  We then convert it to a list at the end for graphing purposes.
             HashMap<LocalDate, Double> sumPricesMapV2 = new HashMap<LocalDate, Double>();
-            // New way of doing things with a map
             for (String accountKey : accountHoldingsByDateMap.keySet()) {
                 for (LocalDate dateKey : accountHoldingsByDateMap.get(accountKey).keySet()) {
                     for (String assetKey : accountHoldingsByDateMap.get(accountKey).get(dateKey).keySet()) {
@@ -423,7 +460,11 @@ public class Dashboard extends AppCompatActivity {
                     }
                 }
             }
-            // Edited for new way of doing things with map
+            // here is where we add the total values to the priceSumsByDate list.
+            // the Price objects that we are adding here are a class that has two fields:
+            // a date and a value/price.  We build this list from the sumPricesMapV2 object,
+            // which uses a map to quickly get all of this data without needing to iterate
+            // through each item in a list.
             for (LocalDate key : sumPricesMapV2.keySet()) {
                 Price newPrice = new Price(key, sumPricesMapV2.get(key));
                 priceSumsByDate.add(newPrice);
