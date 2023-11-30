@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -71,6 +73,9 @@ public class Dashboard extends AppCompatActivity {
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
     TextView accountCountTV;
     TextView returnsTV;
+    Double portfolioValMin;
+    Double getPortfolioValMax;
+    BottomNavigationView bottomNavigationView;
     // *************************************
 
 
@@ -96,6 +101,7 @@ public class Dashboard extends AppCompatActivity {
         positionPricesV2 = new HashMap<>();
         accountCountTV = findViewById(R.id.returns);
         returnsTV = findViewById(R.id.dashboardReturns);
+        bottomNavigationView = findViewById(R.id.dashboardBottomNavigationView);
         //*********************************************
 
         getAccountData();
@@ -276,6 +282,11 @@ public class Dashboard extends AppCompatActivity {
         Thread t1 = new Thread(connectToNetworkThreadRunnable);
         t1.start();
         t1.join();
+        double changeInValue = 100 * (priceSumsByDate.get(priceSumsByDate.size()-1).price - priceSumsByDate.get(0).price) / priceSumsByDate.get(0).price;
+        returnsTV.setText(String.format("%.2f%%", changeInValue));
+        if (changeInValue < 0) {
+            returnsTV.setTextColor(Color.RED);
+        }
         Log.d("", "Logging -------------------------------------------------------------from Dashboard");
         for (Price price : priceSumsByDate) {
             Log.d("", price.date + " called from Dashboard: " + price.price);
