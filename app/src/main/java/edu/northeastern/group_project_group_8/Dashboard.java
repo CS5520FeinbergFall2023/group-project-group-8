@@ -36,7 +36,6 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,6 +70,7 @@ public class Dashboard extends AppCompatActivity {
     // were held on that date in that account.  This is used to build priceSumsByDate.
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
     TextView accountCountTV;
+    TextView returnsTV;
     // *************************************
 
 
@@ -94,7 +94,8 @@ public class Dashboard extends AppCompatActivity {
         holdings = new ArrayList<Holding>();
         accountHoldingsByDateMap = new HashMap<>();
         positionPricesV2 = new HashMap<>();
-        accountCountTV = findViewById(R.id.acountCount);
+        accountCountTV = findViewById(R.id.returns);
+        returnsTV = findViewById(R.id.dashboardReturns);
         //*********************************************
 
         getAccountData();
