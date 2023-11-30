@@ -13,14 +13,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Account Name"
-        android:textSize="30sp"
+        android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.05"
-        app:layout_constraintHorizontal_bias="0.1" />
+        app:layout_constraintVertical_bias="0.03"
+        android:layout_marginLeft="16dp" />
 
     <!-- Total Amount -->
     <TextView
@@ -32,9 +31,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintVertical_bias="0.13"
-        app:layout_constraintHorizontal_bias="0.1"/>
+        app:layout_constraintVertical_bias="0.1"
+        android:layout_marginLeft="16dp"/>
 
     <!-- Time Series Line Chart -->
     <com.github.mikephil.charting.charts.LineChart
@@ -44,6 +42,28 @@
         app:layout_constraintTop_toBottomOf="@+id/totalAmountTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/HoldingsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:text="Holdings"
+        app:layout_constraintTop_toBottomOf="@+id/lineChart"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/HoldingsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        app:layout_constraintTop_toBottomOf="@+id/HoldingsTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"/>
 
     <!-- Bottom Navigation View -->

@@ -47,6 +47,10 @@ public class AccountDetailsPage extends AppCompatActivity {
     String accountName = "acct2";
     double totalAsset = 23333.3;
     String loggedInUser;
+    TextView totalAmountTextView;
+    TextView accountHoldings;
+    StringBuilder resultBuilder;
+    String resultString;
     private LineChart lineChart;
     private List<String> xValues;
     PortfolioData portfolioData;
@@ -76,12 +80,15 @@ public class AccountDetailsPage extends AppCompatActivity {
         setContentView(R.layout.activity_account_details_page);
 
         TextView accountNameTextView = findViewById(R.id.accountNameTextView);
-        TextView totalAmountTextView = findViewById(R.id.totalAmountTextView);
-        LineChart lineChart = findViewById(R.id.lineChart);
+        totalAmountTextView = findViewById(R.id.totalAmountTextView);
+        TextView holdingsTitle = findViewById(R.id.HoldingsTitle);
+        accountHoldings = findViewById(R.id.HoldingsTextView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         accountNameTextView.setText(accountName);
         totalAmountTextView.setText("Total Asset: $" + totalAsset);
+
+        resultBuilder = new StringBuilder();
 
         Bundle extras = getIntent().getExtras();
         if (extras == null) {
@@ -474,11 +481,7 @@ public class AccountDetailsPage extends AppCompatActivity {
                 for (LocalDate dateKey : accountHoldingsByDateMap.get(accountKey).keySet()) {
                     for (String assetKey : accountHoldingsByDateMap.get(accountKey).get(dateKey).keySet()) {
                         if (!sumPricesMapV2.containsKey(dateKey)) {
-                            Log.d("", "Account: " + accountKey);
-                            Log.d("", "Date: " + dateKey);
-                            Log.d("", "Asset: " + assetKey);
-                            Log.d("", "Count: " + accountHoldingsByDateMap.get(accountKey).get(dateKey).get(assetKey));
-                            Log.d("", "Price: " + positionPricesV2.get(assetKey).get(dateKey));
+
                             if (positionPricesV2.get(assetKey).containsKey(dateKey)) {
                                 sumPricesMapV2.put(dateKey, positionPricesV2.get(assetKey).get(dateKey) * accountHoldingsByDateMap.get(accountKey).get(dateKey).get(assetKey));
                             }
@@ -516,6 +519,23 @@ public class AccountDetailsPage extends AppCompatActivity {
                 Log.d("", "Date: " + price.date);
                 Log.d("", "Value: " + price.price);
             }
+
+            LocalDate dateKey = priceSumsByDate.get(priceSumsByDate.size() - 1).date;
+            for (String assetKey : accountHoldingsByDateMap.get(accountName)
+                    .get(dateKey)
+                    .keySet()) {
+                resultBuilder.append(assetKey).append(": ");
+                resultBuilder.append(accountHoldingsByDateMap.get(accountName).get(dateKey).get(assetKey)).append(" share at $");
+                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey)).append("\n\n");
+            }
+            String resultString = resultBuilder.toString();
+
+            runOnUiThread(() -> {
+                // Ensure UI updates are done on the UI thread
+                totalAsset = priceSumsByDate.get(priceSumsByDate.size() - 1).price;
+                totalAmountTextView.setText("Total Asset: $" + totalAsset);
+                accountHoldings.setText(resultString);
+            });
         }
     }
 
