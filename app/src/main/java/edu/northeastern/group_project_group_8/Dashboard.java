@@ -4,6 +4,7 @@ import static java.lang.Thread.sleep;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -35,7 +36,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -76,6 +76,9 @@ public class Dashboard extends AppCompatActivity {
     Double portfolioValMin;
     Double getPortfolioValMax;
     BottomNavigationView bottomNavigationView;
+    TextView greetingTV;
+    TextView returnsLabel;
+    ConstraintLayout returnsBackground;
     // *************************************
 
 
@@ -99,9 +102,13 @@ public class Dashboard extends AppCompatActivity {
         holdings = new ArrayList<Holding>();
         accountHoldingsByDateMap = new HashMap<>();
         positionPricesV2 = new HashMap<>();
-        accountCountTV = findViewById(R.id.returns);
+        accountCountTV = findViewById(R.id.accounts);
         returnsTV = findViewById(R.id.dashboardReturns);
         bottomNavigationView = findViewById(R.id.dashboardBottomNavigationView);
+        greetingTV = findViewById(R.id.dashboardGreeting);
+        greetingTV.setText("Hello, " + loggedInUser);
+        returnsLabel = findViewById(R.id.returnsString);
+        returnsBackground = findViewById(R.id.returnsConstraintLayout);
         //*********************************************
 
         getAccountData();
@@ -286,6 +293,9 @@ public class Dashboard extends AppCompatActivity {
         returnsTV.setText(String.format("%.2f%%", changeInValue));
         if (changeInValue < 0) {
             returnsTV.setTextColor(Color.RED);
+            returnsLabel.setTextColor(Color.RED);
+            returnsBackground.setBackgroundColor(Color.RED);
+
         }
         Log.d("", "Logging -------------------------------------------------------------from Dashboard");
         for (Price price : priceSumsByDate) {

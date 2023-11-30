@@ -10,11 +10,10 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/dashboardBottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_percent="0.50"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintHeight_percent="0.60"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart"
@@ -29,31 +28,41 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout2"
+        android:id="@+id/returnsConstraintLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.2"
         app:layout_constraintHorizontal_bias="0.85"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/black"
+        app:layout_constraintTop_toBottomOf="@+id/dashboardGreeting"
         app:layout_constraintWidth_percent="0.40">
 
         <TextView
             android:id="@+id/dashboardReturns"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
             android:layout_margin="2dp"
-            android:textAlignment="center"
+            android:background="@color/white"
             android:gravity="center"
+            android:textAlignment="center"
             android:textSize="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/returnsString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/returns"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toBottomOf="@+id/dashboardReturns"
+            app:layout_constraintEnd_toEndOf="@+id/dashboardReturns"
+            app:layout_constraintStart_toStartOf="@+id/dashboardReturns" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -63,25 +72,37 @@
         android:background="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+
+        app:layout_constraintTop_toBottomOf="@+id/dashboardGreeting"
         app:layout_constraintWidth_percent="0.40">
 
         <TextView
-            android:id="@+id/returns"
+            android:id="@+id/accounts"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
-            android:textAlignment="center"
-            android:gravity="center"
-            android:textSize="40dp"
             android:background="@color/white"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textSize="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/accountsString"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/accounts"
+            android:textSize="30sp"
+            android:layout_marginBottom="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/accounts"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/accounts" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -93,6 +114,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
+
+    <TextView
+        android:id="@+id/dashboardGreeting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.15" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
