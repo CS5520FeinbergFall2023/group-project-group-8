@@ -45,7 +45,8 @@ import java.util.Scanner;
 
 public class AccountDetailsPage extends AppCompatActivity {
     String accountName = "Fidelity Account 1";
-    double totalAsset = 23333.3;String loggedInUser;
+    double totalAsset = 23333.3;
+    String loggedInUser;
     private LineChart lineChart;
     private List<String> xValues;
     PortfolioData portfolioData;
