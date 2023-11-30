@@ -44,7 +44,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class AccountDetailsPage extends AppCompatActivity {
-    String accountName = "Fidelity Account 1";
+    String accountName = "acct2";
     double totalAsset = 23333.3;
     String loggedInUser;
     private LineChart lineChart;
@@ -104,9 +104,6 @@ public class AccountDetailsPage extends AppCompatActivity {
 
         getAccountData();
 
-        // Set up line chart
-        // ...
-
         // Set up bottom navigation
 //        bottomNavigationView.setOnNavigationItemSelectedListener(
 //                new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -139,24 +136,9 @@ public class AccountDetailsPage extends AppCompatActivity {
         mDatabaseAccounts.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DataSnapshot> task) {
-                Log.d("", "Current Thread_inGetAccountDataListener: " + Thread.currentThread().toString());
-                DataSnapshot snapshot = task.getResult();
-                Log.d("", "Account snapshot:" + snapshot.getValue());
-                if (snapshot.getValue()!= null) {
-                    Map<String, Object> myAccountsMap = (Map<String, Object>) snapshot.getValue();
-                    Log.d("", "Account Keys: " + myAccountsMap.keySet());
-                    accounts.clear();
-                    for (String key : myAccountsMap.keySet()) {
-                        Map<String, String> account = (Map<String, String>) myAccountsMap.get(key);
-                        if (Objects.equals(account.get("owner"), loggedInUser)) {
-                            accounts.add(key);
-                        }
-                    }
-                    for (String account : accounts) {
-                        Log.d("", "Account while getting accounts: " + account);
-                    }
-                    getHoldingsData();
-                }
+                accounts.clear();
+                accounts.add(accountName);
+                getHoldingsData();
             }
         });
     }
