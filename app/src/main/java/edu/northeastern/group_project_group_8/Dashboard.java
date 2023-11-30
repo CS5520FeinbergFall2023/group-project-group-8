@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -69,6 +70,7 @@ public class Dashboard extends AppCompatActivity {
     // of asset names, which each have a count value denoting how many of that asset
     // were held on that date in that account.  This is used to build priceSumsByDate.
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
+    TextView accountCountTV;
     // *************************************
 
 
@@ -92,6 +94,7 @@ public class Dashboard extends AppCompatActivity {
         holdings = new ArrayList<Holding>();
         accountHoldingsByDateMap = new HashMap<>();
         positionPricesV2 = new HashMap<>();
+        accountCountTV = findViewById(R.id.acountCount);
         //*********************************************
 
         getAccountData();
@@ -124,6 +127,7 @@ public class Dashboard extends AppCompatActivity {
                     for (String account : accounts) {
                         Log.d("", "Account while getting accounts: " + account);
                     }
+                    accountCountTV.setText(String.valueOf(accounts.size()));
                     getHoldingsData();
                 }
             }
@@ -320,7 +324,7 @@ public class Dashboard extends AppCompatActivity {
             entries1.add(new Entry(i, currentPrice.price.floatValue()));
         }
 
-        LineDataSet dataSet1 = new LineDataSet(entries1, "Math");
+        LineDataSet dataSet1 = new LineDataSet(entries1, "");
         dataSet1.setColor(Color.BLUE);
         dataSet1.setDrawCircles(false);
 //        dataSet1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
