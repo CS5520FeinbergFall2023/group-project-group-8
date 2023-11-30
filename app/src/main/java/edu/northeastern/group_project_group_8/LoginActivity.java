@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void launchAccountDetailsPage() {
         Intent accountDetailsPageIntent = new Intent(this, AccountDetailsPage.class);
+        accountDetailsPageIntent.putExtra("loggedInUsername", loggedInUsername);
         startActivity(accountDetailsPageIntent);
     }
 }
