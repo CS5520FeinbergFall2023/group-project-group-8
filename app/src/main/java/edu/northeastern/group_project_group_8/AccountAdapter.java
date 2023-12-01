@@ -1,13 +1,15 @@
 package edu.northeastern.group_project_group_8;
 
+import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -19,13 +21,13 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,15 +45,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class AccountDetailsPage extends AppCompatActivity {
-    String accountName = "acct1";
-    double totalAsset = 23333.3;
+public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHolder> {
+
+    private ArrayList<String> accountNames;
+    private Context context;
+
     String loggedInUser;
     TextView totalAmountTextView;
     TextView accountHoldings;
     StringBuilder resultBuilder;
     String resultString;
-    private LineChart lineChart;
+    private static LineChart lineChart;
     private List<String> xValues;
     PortfolioData portfolioData;
 
@@ -73,32 +77,12 @@ public class AccountDetailsPage extends AppCompatActivity {
     // of asset names, which each have a count value denoting how many of that asset
     // were held on that date in that account.  This is used to build priceSumsByDate.
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
+    String accountName;
+    double totalAsset = -1;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_details_page);
-
-        TextView accountNameTextView = findViewById(R.id.accountNameTextView);
-        totalAmountTextView = findViewById(R.id.totalAmountTextView);
-        TextView holdingsTitle = findViewById(R.id.HoldingsTitle);
-        accountHoldings = findViewById(R.id.HoldingsTextView);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
-
-        accountNameTextView.setText(accountName);
-        totalAmountTextView.setText("Total Asset: $" + totalAsset);
-
-        resultBuilder = new StringBuilder();
-
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            return;
-        }
-
-        loggedInUser = extras.getString("loggedInUsername");
-        Log.d("", "User: " + loggedInUser);
-
-        // Initializations from PortfolioData**********
+    public AccountAdapter(Context context, ArrayList<String> accountNames) {
+        this.context = context;
+        this.accountNames = accountNames;
         positions = new ArrayList<>();
         priceSumsByDate = new ArrayList<Price>();
         mDatabaseAccounts = FirebaseDatabase.getInstance().getReference().child("accounts");
@@ -107,29 +91,39 @@ public class AccountDetailsPage extends AppCompatActivity {
         holdings = new ArrayList<Holding>();
         accountHoldingsByDateMap = new HashMap<>();
         positionPricesV2 = new HashMap<>();
-        //*********************************************
+    }
 
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.account_card_item, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        accountName = accountNames.get(position);
+        holder.accountNameTextView.setText(accountName);
         getAccountData();
+        holder.totalAmountTextView.setText("$" + totalAsset);
+    }
 
-        // Set up bottom navigation
-//        bottomNavigationView.setOnNavigationItemSelectedListener(
-//                new BottomNavigationView.OnNavigationItemSelectedListener() {
-//                    @Override
-//                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                        switch (item.getItemId()) {
-//                            case R.id.action_home:
-//                                // Handle home navigation
-//                                break;
-//                            case R.id.action_accounts:
-//                                // Handle positions navigation
-//                                break;
-//                            case R.id.action_holdings:
-//                                // Handle account details navigation
-//                                break;
-//                        }
-//                        return true;
-//                    }
-//                });
+    @Override
+    public int getItemCount() {
+        return accountNames.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView accountNameTextView;
+        TextView totalAmountTextView;
+
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            accountNameTextView = itemView.findViewById(R.id.accountNameTextView);
+            totalAmountTextView = itemView.findViewById(R.id.totalAmountTextView);
+            lineChart = itemView.findViewById(R.id.lineChart);
+        }
     }
 
     private void getAccountData() {
@@ -295,7 +289,7 @@ public class AccountDetailsPage extends AppCompatActivity {
         for (Price price : priceSumsByDate) {
             Log.d("", price.date + " called from Dashboard: " + price.price);
         }
-        lineChart = findViewById(R.id.lineChart);
+        //lineChart = itemView.findViewById(R.id.lineChart);
         Description description = new Description();
         description.setText("Portfolio Value");
         description.setPosition(250f, 150f);
@@ -520,22 +514,18 @@ public class AccountDetailsPage extends AppCompatActivity {
                 Log.d("", "Value: " + price.price);
             }
 
-            LocalDate dateKey = priceSumsByDate.get(priceSumsByDate.size() - 1).date;
-            for (String assetKey : accountHoldingsByDateMap.get(accountName)
-                    .get(dateKey)
-                    .keySet()) {
-                resultBuilder.append(assetKey).append(": ");
-                resultBuilder.append(accountHoldingsByDateMap.get(accountName).get(dateKey).get(assetKey)).append(" share at $");
-                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey)).append("\n\n");
-            }
-            String resultString = resultBuilder.toString();
+//            LocalDate dateKey = priceSumsByDate.get(priceSumsByDate.size() - 1).date;
+//            for (String assetKey : accountHoldingsByDateMap.get(accountName)
+//                    .get(dateKey)
+//                    .keySet()) {
+//                resultBuilder.append(assetKey).append(": ");
+//                resultBuilder.append(accountHoldingsByDateMap.get(accountName).get(dateKey).get(assetKey)).append(" share at $");
+//                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey)).append("\n\n");
+//            }
+//            String resultString = resultBuilder.toString();
 
-            runOnUiThread(() -> {
-                // Ensure UI updates are done on the UI thread
-                totalAsset = priceSumsByDate.get(priceSumsByDate.size() - 1).price;
-                totalAmountTextView.setText("Total Asset: $" + totalAsset);
-                accountHoldings.setText(resultString);
-            });
+
+            totalAsset = priceSumsByDate.get(priceSumsByDate.size() - 1).price;
         }
     }
 
@@ -544,3 +534,4 @@ public class AccountDetailsPage extends AppCompatActivity {
         return s.useDelimiter("\\A").next();
     }
 }
+
