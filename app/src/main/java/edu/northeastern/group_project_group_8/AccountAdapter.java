@@ -1,5 +1,6 @@
 package edu.northeastern.group_project_group_8;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -54,7 +55,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     StringBuilder resultBuilder;
     String resultString;
     String accountName;
-    double totalAsset = -1;
+    double totalAsset;
     HashMap<String, ArrayList<Price>> priceSumsByDateByAccount;
 
     public AccountAdapter(Context context, ArrayList<String> accountNames, HashMap<String, ArrayList<Price>> priceSumsByDateByAccount) {
@@ -70,12 +71,18 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         accountName = accountNames.get(position);
         holder.accountNameTextView.setText(accountName);
-        holder.totalAmountTextView.setText("$" + totalAsset);
         holder.priceSumsByDate = priceSumsByDateByAccount.get(accountName);
+        if (holder.priceSumsByDate!= null && !holder.priceSumsByDate.isEmpty()) {
+            totalAsset = holder.priceSumsByDate.get(holder.priceSumsByDate.size()-1).price;
+            holder.totalAmountTextView.setText("$" + totalAsset);
+        } else {
+            holder.totalAmountTextView.setText("$0.00");
+        }
 
         Description description = new Description();
         description.setText("Portfolio Value");
