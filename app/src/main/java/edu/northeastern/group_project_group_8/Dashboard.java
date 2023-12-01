@@ -367,6 +367,7 @@ public class Dashboard extends AppCompatActivity {
             for (String position : positions) {
                 String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=KFUT67C4LM82DY2I"; // Chris API Key
+//                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=JMCR07N5KD834KL3"; // Zicong API Key
                 URL url = null;
                 String symbol = null;
                 try {
