@@ -23,6 +23,8 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -380,6 +382,20 @@ public class Dashboard extends AppCompatActivity {
 
         LineData lineData = new LineData(dataSet1);
         lineData.setDrawValues(false);
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                lineChart.highlightValue(h);
+                Log.d("", "Highlight: " + h.toString());
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
+
+
 
         lineChart.setData(lineData);
         lineChart.setAutoScaleMinMaxEnabled(true);
