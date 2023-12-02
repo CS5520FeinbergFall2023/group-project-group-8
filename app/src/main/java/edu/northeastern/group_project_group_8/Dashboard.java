@@ -393,7 +393,7 @@ public class Dashboard extends AppCompatActivity {
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=KFUT67C4LM82DY2I"; // Chris API Key
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=JMCR07N5KD834KL3"; // Zicong API Key
-                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=2GSV7G6LKLO25ABN"; // Paid API Key
+                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&outputsize=full&apikey=2GSV7G6LKLO25ABN"; // Paid API Key
                 URL url = null;
                 String symbol = null;
                 try {
