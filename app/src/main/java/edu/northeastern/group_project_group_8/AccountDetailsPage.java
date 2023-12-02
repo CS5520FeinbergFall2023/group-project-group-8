@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -322,8 +323,8 @@ public class AccountDetailsPage extends AppCompatActivity {
         }
         lineChart = findViewById(R.id.lineChart);
         Description description = new Description();
-        description.setText("Portfolio Value");
-        description.setPosition(250f, 150f);
+        description.setText("");
+//        description.setPosition(250f, 150f);
         lineChart.setDescription(description);
         lineChart.getAxisRight().setDrawLabels(false);
         ArrayList<String> portfolioDates = new ArrayList<>();
@@ -332,21 +333,11 @@ public class AccountDetailsPage extends AppCompatActivity {
         }
 //        xValues = Arrays.asList(String.valueOf(portfolioDates));
         xValues = portfolioDates;
-        ArrayList<String> newXValues = new ArrayList<>();
-        int xSize = xValues.size();
-        Log.d("", "xSize: " + xSize);
-        int interval = xSize / 4;
-        for (int i = 0; i < xSize; i++) {
-            if ((i+1)%interval == 0) {
-                newXValues.add(xValues.get(i));
-            }
-        }
-        Log.d("", "newXValues Size: " + newXValues.size());
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(newXValues));
-        xAxis.setLabelCount(newXValues.size());
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xValues));
+        xAxis.setLabelCount(4);
         xAxis.setGranularity(1f);
 //        xAxis.setDrawLabels(false);
         xAxis.setDrawGridLines(false);
@@ -370,6 +361,9 @@ public class AccountDetailsPage extends AppCompatActivity {
         dataSet1.setDrawCircles(false);
 //        dataSet1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
 //        dataSet1.setCubicIntensity(1f);
+
+        Legend legend = lineChart.getLegend();
+        legend.setEnabled(false);
 
         LineData lineData = new LineData(dataSet1);
         lineData.setDrawValues(false);

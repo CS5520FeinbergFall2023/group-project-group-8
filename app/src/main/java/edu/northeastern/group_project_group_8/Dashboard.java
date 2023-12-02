@@ -14,7 +14,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -24,6 +26,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.transition.MaterialSharedAxis;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -336,8 +339,8 @@ public class Dashboard extends AppCompatActivity {
         }
         lineChart = findViewById(R.id.lineChart);
         Description description = new Description();
-        description.setText("Portfolio Value");
-        description.setPosition(250f, 150f);
+        description.setText("");
+//        description.setPosition(250f, 150f);
         lineChart.setDescription(description);
         lineChart.getAxisRight().setDrawLabels(false);
         ArrayList<String> portfolioDates = new ArrayList<>();
@@ -346,28 +349,17 @@ public class Dashboard extends AppCompatActivity {
         }
 //        xValues = Arrays.asList(String.valueOf(portfolioDates));
         xValues = portfolioDates;
-        ArrayList<String> newXValues = new ArrayList<>();
-        int xSize = xValues.size();
-        Log.d("", "xSize: " + xSize);
-        int interval = xSize / 4;
-        for (int i = 0; i < xSize; i++) {
-            if ((i+1)%interval == 0) {
-                newXValues.add(xValues.get(i));
-            }
-        }
-        Log.d("", "newXValues Size: " + newXValues.size());
+        Log.d("", "xValues Size: " + xValues.size());
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(newXValues));
-        xAxis.setLabelCount(newXValues.size());
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(xValues));
+        xAxis.setLabelCount(4);
         xAxis.setGranularity(1f);
-//        xAxis.setDrawLabels(false);
         xAxis.setDrawGridLines(false);
 
         YAxis yAxis = lineChart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
-//        yAxis.setAxisMaximum(500f);
         yAxis.setAxisLineWidth(2f);
         yAxis.setAxisLineColor(Color.BLACK);
         yAxis.setLabelCount(10);
@@ -382,8 +374,9 @@ public class Dashboard extends AppCompatActivity {
         LineDataSet dataSet1 = new LineDataSet(entries1, "");
         dataSet1.setColor(Color.BLUE);
         dataSet1.setDrawCircles(false);
-//        dataSet1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        dataSet1.setCubicIntensity(1f);
+
+        Legend legend = lineChart.getLegend();
+        legend.setEnabled(false);
 
         LineData lineData = new LineData(dataSet1);
         lineData.setDrawValues(false);
