@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -112,6 +114,12 @@ public class Dashboard extends AppCompatActivity {
         //*********************************************
 
         getAccountData();
+        accountCountTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchAccountsPage();
+            }
+        });
     }
 
     private void getAccountData() {
@@ -393,7 +401,8 @@ public class Dashboard extends AppCompatActivity {
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=KFUT67C4LM82DY2I"; // Chris API Key
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=JMCR07N5KD834KL3"; // Zicong API Key
-                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&outputsize=full&apikey=2GSV7G6LKLO25ABN"; // Paid API Key
+//                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&outputsize=full&apikey=2GSV7G6LKLO25ABN"; // Paid API Key
+                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=2GSV7G6LKLO25ABN"; // Paid API Key, shorter history returned
                 URL url = null;
                 String symbol = null;
                 try {
@@ -563,5 +572,11 @@ public class Dashboard extends AppCompatActivity {
     private String convertStreamToString(InputStream is) {
         Scanner s = new Scanner(is);
         return s.useDelimiter("\\A").next();
+    }
+
+    public void launchAccountsPage() {
+        Intent accountsPageIntent = new Intent(this, AccountsPage.class);
+        accountsPageIntent.putExtra("loggedInUsername", loggedInUser);
+        startActivity(accountsPageIntent);
     }
 }
