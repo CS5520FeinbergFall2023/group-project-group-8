@@ -44,7 +44,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class AccountDetailsPage extends AppCompatActivity {
-    String accountName = "acct1";
+    String accountName = "acct3";
     double totalAsset = 23333.3;
     String loggedInUser;
     TextView totalAmountTextView;
@@ -227,27 +227,52 @@ public class AccountDetailsPage extends AppCompatActivity {
                     Log.d("", "currentEndDate: " + currentEndDate);
                     HashMap<String, Long> assetCount = new HashMap<>();
                     assetCount.put(currentAsset, currentCount);
+                    //contains current account
                     if (accountHoldingsByDateMap.containsKey(currentAccount)) {
                         Log.d("", "Account already in map");
                         for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
-//                            Log.d("", "Date: " + date);
-                            if (accountHoldingsByDateMap.get(currentAccount).containsKey(date) && accountHoldingsByDateMap.get(currentAccount).get(date).containsKey(currentAsset)) {
-                                accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
-                            } else {
-                                if (accountHoldingsByDateMap.get(currentAccount).containsKey(date)) {
+                            Log.d("", "Date: " + date);
+                            // contains account, contains date
+                            if (accountHoldingsByDateMap.get(currentAccount).containsKey(date)) {
+                                Log.d("", "Contains Account, Contains Date");
+                                // contains account, contains date, contains asset
+                                if (accountHoldingsByDateMap.get(currentAccount).get(date).containsKey(currentAsset)) {
+                                    Log.d("", "Contains Account, Contains Date, contains Asset: " + currentAsset);
+                                    Log.d("", "Incremementing " + currentAsset);
                                     long temp = accountHoldingsByDateMap.get(currentAccount).get(date).get(currentAsset);
+                                    Log.d("", "Old count: " + temp);
                                     temp += currentCount;
-                                } else {
-                                    accountHoldingsByDateMap.get(currentAccount).put(date, assetCount);
+                                    Log.d("", "New count: " + temp);
+                                    accountHoldingsByDateMap.get(currentAccount).get(date).put(currentAsset, temp);
+                                }
+                                // contains account, contains date, does not contain asset
+                                else {
+                                    Log.d("", "Contains Account, Contains Date, DOES NOT contains Asset: " + currentAsset);
+                                    accountHoldingsByDateMap.get(currentAccount).get(date).put(currentAsset, currentCount);
                                 }
                             }
+                            //contains account, does not contain date
+                            else {
+                                Log.d("", "Contains Account, DOES NOT contain Date, DOES NOT contains Asset: " + currentAsset);
+                                HashMap<String, Long> newAssetCount = new HashMap<>();
+                                newAssetCount.put(currentAsset, currentCount);
+                                accountHoldingsByDateMap.get(currentAccount).put(date, newAssetCount);
+                            }
                         }
-                    } else {
+                    }
+                    // does not contain current account
+                    else {
                         Log.d("", "Account NOT already in map");
                         HashMap<LocalDate, HashMap<String, Long>> dateAsset = new HashMap<>();
                         for (LocalDate date = currentStartDate; date.isBefore(currentEndDate) || date.isEqual(currentEndDate); date = date.plusDays(1)) {
-//                            Log.d("", "Date: " + date);
-                            dateAsset.put(date, assetCount);
+                            Log.d("", "Date: " + date);
+                            for (String accountKey : assetCount.keySet()) {
+                                Log.d("", "Asset: " + accountKey);
+                            }
+                            Log.d("", "Count: " + assetCount.get(currentAsset));
+                            HashMap<String, Long> newAssetCount = new HashMap<>();
+                            newAssetCount.put(currentAsset, currentCount);
+                            dateAsset.put(date, newAssetCount);
                         }
                         accountHoldingsByDateMap.put(currentAccount, dateAsset);
                     }
@@ -359,8 +384,9 @@ public class AccountDetailsPage extends AppCompatActivity {
         @Override
         public void run() {
             for (String position : positions) {
-                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
+//                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=demo";
 //                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=KFUT67C4LM82DY2I"; // Chris API Key
+                String urlString = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + position + "&apikey=2GSV7G6LKLO25ABN"; // Paid API Key
                 URL url = null;
                 String symbol = null;
                 try {

@@ -55,8 +55,8 @@ public class LoginActivity extends AppCompatActivity {
                         mDatabase.child(newUser.getUsername()).setValue(newUser);
                     }
 //                    launchUserDashboard();
-                    //launchAccountDetailsPage();
-                    launchAccountsPage();
+                    launchAccountDetailsPage();
+//                    launchAccountsPage();
                 }
             }
         });
