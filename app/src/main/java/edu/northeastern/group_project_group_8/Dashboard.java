@@ -390,6 +390,7 @@ public class Dashboard extends AppCompatActivity {
 
         lineChart.setData(lineData);
         lineChart.setAutoScaleMinMaxEnabled(true);
+        lineChart.animateY(1000);
 
         lineChart.invalidate();
     }

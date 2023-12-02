@@ -139,6 +139,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
 
         holder.lineChart.setData(lineData);
         holder.lineChart.setAutoScaleMinMaxEnabled(true);
+        holder.lineChart.animateY(1000);
 
         holder.lineChart.invalidate();
     }
