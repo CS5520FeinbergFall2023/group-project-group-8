@@ -43,6 +43,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
@@ -80,7 +81,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         holder.priceSumsByDate = priceSumsByDateByAccount.get(accountName);
         if (holder.priceSumsByDate!= null && !holder.priceSumsByDate.isEmpty()) {
             totalAsset = holder.priceSumsByDate.get(holder.priceSumsByDate.size()-1).price;
-            holder.totalAmountTextView.setText("$" + totalAsset);
+            String totalAssetString = String.format(Locale.getDefault(), "%.2f", totalAsset);
+            holder.totalAmountTextView.setText("$" + totalAssetString);
         } else {
             holder.totalAmountTextView.setText("$0.00");
         }
