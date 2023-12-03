@@ -57,13 +57,17 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     StringBuilder resultBuilder;
     String resultString;
     String accountName;
+    String platform;
+    String performance;
     double totalAsset;
     HashMap<String, ArrayList<Price>> priceSumsByDateByAccount;
+    HashMap<String, String> platformByAccountMap;
 
-    public AccountAdapter(Context context, ArrayList<String> accountNames, HashMap<String, ArrayList<Price>> priceSumsByDateByAccount) {
+    public AccountAdapter(Context context, ArrayList<String> accountNames, HashMap<String, ArrayList<Price>> priceSumsByDateByAccount, HashMap<String, String> platformByAccountMap) {
         this.context = context;
         this.accountNames = accountNames;
         this.priceSumsByDateByAccount = priceSumsByDateByAccount;
+        this.platformByAccountMap = platformByAccountMap;
     }
 
     @NonNull
@@ -77,7 +81,9 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         accountName = accountNames.get(position);
+        platform = platformByAccountMap.get(accountName);
         holder.accountNameTextView.setText(accountName);
+        holder.institutionTextView.setText(platform);
         holder.priceSumsByDate = priceSumsByDateByAccount.get(accountName);
         if (holder.priceSumsByDate!= null && !holder.priceSumsByDate.isEmpty()) {
             totalAsset = holder.priceSumsByDate.get(holder.priceSumsByDate.size()-1).price;
@@ -148,6 +154,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView accountNameTextView;
         TextView totalAmountTextView;
+        TextView institutionTextView;
+        TextView performanceTextView;
         private static LineChart lineChart;
         ArrayList<Price> priceSumsByDate;
         private List<String> xValues;
@@ -157,6 +165,8 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             super(itemView);
             accountNameTextView = itemView.findViewById(R.id.accountNameTextView);
             totalAmountTextView = itemView.findViewById(R.id.totalAmountTextView);
+            institutionTextView = itemView.findViewById(R.id.platformTextView);
+            performanceTextView = itemView.findViewById(R.id.performanceTextView);
             lineChart = itemView.findViewById(R.id.lineChart);
         }
     }

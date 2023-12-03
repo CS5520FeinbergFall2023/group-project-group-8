@@ -7,30 +7,68 @@
     android:layout_margin="8dp">
 
     <TextView
-        android:id="@+id/accountNameTextView"
+        android:id="@+id/platformTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
+        android:layout_alignBaseline="@id/totalAmountTextView"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:text="@string/platformString"
         android:textColor="@android:color/black"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"/>
+        android:textSize="24sp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/totalAmountTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="$1000"
-        android:textSize="30sp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="150dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"
         android:layout_toEndOf="@+id/accountNameTextView"
-        android:layout_marginStart="130dp"/>
+        android:text="$1000"
+        android:textAlignment="viewEnd"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/accountNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/platformTextView"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/performanceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/totalAmountTextView"
+        android:layout_alignEnd="@id/totalAmountTextView"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="5dp"
+        android:text="Performance Data"
+        android:textSize="18sp" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/lineChart"
         android:layout_width="400dp"
         android:layout_height="150dp"
-        android:layout_below="@+id/accountNameTextView"
+        android:layout_below="@+id/performanceTextView"
         android:layout_marginTop="10dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"/>
+
+    <View
+        android:id="@+id/accountCardDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignTop="@id/lineChart"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="?android:attr/listDivider" />
 </RelativeLayout>

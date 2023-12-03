@@ -65,6 +65,7 @@ public class AccountsPage extends AppCompatActivity {
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
     HashMap<String, HashMap<LocalDate, Double>> sumPricesMapByAccount;
     HashMap<String, ArrayList<Price>> priceSumsByDateByAccount;
+    HashMap<String, String> platformByAccountMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,7 @@ public class AccountsPage extends AppCompatActivity {
         accountHoldingsByDateMap = new HashMap<>();
         positionPricesV2 = new HashMap<>();
         priceSumsByDateByAccount = new HashMap<>();
+        platformByAccountMap = new HashMap<>();
 
         getAccountData();
 //        ArrayList<String> accountNames = getAccountNames(); // Replace this with your data
@@ -116,6 +118,8 @@ public class AccountsPage extends AppCompatActivity {
                         Map<String, String> account = (Map<String, String>) myAccountsMap.get(key);
                         if (Objects.equals(account.get("owner"), loggedInUser)) {
                             accounts.add(key);
+                            String platform = account.get("platform");
+                            platformByAccountMap.put(key, platform);
                         }
                     }
                     for (String account : accounts) {
@@ -299,7 +303,7 @@ public class AccountsPage extends AppCompatActivity {
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        AccountAdapter adapter = new AccountAdapter(this, accounts, priceSumsByDateByAccount);
+        AccountAdapter adapter = new AccountAdapter(this, accounts, priceSumsByDateByAccount, platformByAccountMap);
         recyclerView.setAdapter(adapter);
     }
 

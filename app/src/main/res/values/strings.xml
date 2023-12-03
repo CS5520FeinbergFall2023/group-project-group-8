@@ -5,4 +5,5 @@
     <string name="login">Login</string>
     <string name="accounts">Accounts</string>
     <string name="returns">Returns</string>
+    <string name="platformString">Platform</string>
 </resources>
