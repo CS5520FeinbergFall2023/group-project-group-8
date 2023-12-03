@@ -28,7 +28,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginEnd="15dp"
         android:layout_toEndOf="@+id/accountNameTextView"
-        android:text="$1000"
+        android:text="@string/dummyAmountString"
         android:textAlignment="viewEnd"
         android:textSize="30sp" />
 
@@ -49,8 +49,12 @@
         android:layout_alignEnd="@id/totalAmountTextView"
         android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
-        android:text="Performance Data"
-        android:textSize="18sp" />
+        android:paddingHorizontal="10dp"
+        android:text="@string/performance_data_String"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/lineChart"

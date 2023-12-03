@@ -89,9 +89,25 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             totalAsset = holder.priceSumsByDate.get(holder.priceSumsByDate.size()-1).price;
             String totalAssetString = String.format(Locale.getDefault(), "%.2f", totalAsset);
             holder.totalAmountTextView.setText("$" + totalAssetString);
+            double changeInValue = 100 * (holder.priceSumsByDate.get(holder.priceSumsByDate.size()-1).price - holder.priceSumsByDate.get(0).price) / holder.priceSumsByDate.get(0).price;
+            String changeInValueString = String.format(Locale.getDefault(), "%.2f", changeInValue);
+            if (changeInValue > 0) {
+//                holder.performanceTextView.setTextColor(Color.GREEN);
+                holder.performanceTextView.setText("+" + changeInValueString + "%");
+                holder.performanceTextView.setBackgroundColor(Color.parseColor("#00FF00"));
+            } else if (changeInValue < 0) {
+//                holder.performanceTextView.setTextColor(Color.RED);
+                holder.performanceTextView.setText(changeInValueString + "%");
+                holder.performanceTextView.setBackgroundColor(Color.parseColor("#FF0000"));
+            } else {
+//                holder.performanceTextView.setTextColor(Color.BLACK);
+                holder.performanceTextView.setText(changeInValueString + "%");
+                holder.performanceTextView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
         } else {
             holder.totalAmountTextView.setText("$0.00");
         }
+
 
         Description description = new Description();
         description.setText("");
