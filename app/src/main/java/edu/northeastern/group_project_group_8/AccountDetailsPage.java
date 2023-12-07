@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
@@ -56,6 +58,9 @@ public class AccountDetailsPage extends AppCompatActivity {
     double totalAsset;
     String loggedInUser;
     TextView totalAmountTextView;
+    List<String> assetDetails;
+    AccountHoldingsAdapter adapter;
+    RecyclerView accountHoldingsRecyclerView;
     TextView accountHoldings;
     StringBuilder resultBuilder;
     String resultString;
@@ -90,7 +95,6 @@ public class AccountDetailsPage extends AppCompatActivity {
         TextView accountNameTextView = findViewById(R.id.accountNameTextView);
         totalAmountTextView = findViewById(R.id.totalAmountTextView);
         TextView holdingsTitle = findViewById(R.id.HoldingsTitle);
-        accountHoldings = findViewById(R.id.HoldingsTextView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.action_accounts);
 
@@ -105,6 +109,10 @@ public class AccountDetailsPage extends AppCompatActivity {
         totalAmountTextView.setText("Total Asset: $" + totalAssetString);
 
         resultBuilder = new StringBuilder();
+
+        accountHoldingsRecyclerView = findViewById(R.id.accountHoldingsRecyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        accountHoldingsRecyclerView.setLayoutManager(layoutManager);
 
 
         // Initializations from PortfolioData**********
@@ -576,18 +584,24 @@ public class AccountDetailsPage extends AppCompatActivity {
             }
 
             LocalDate dateKey = priceSumsByDate.get(priceSumsByDate.size() - 1).date;
+            assetDetails = new ArrayList<>();
             for (String assetKey : accountHoldingsByDateMap.get(accountName)
                     .get(dateKey)
                     .keySet()) {
+                resultBuilder.setLength(0);
                 resultBuilder.append(assetKey).append(": ");
                 resultBuilder.append(accountHoldingsByDateMap.get(accountName).get(dateKey).get(assetKey)).append(" share at $");
-                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey)).append("\n\n");
+                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey));
+
+                String resultString = resultBuilder.toString();
+                assetDetails.add(resultString);
             }
-            String resultString = resultBuilder.toString();
+
 
             runOnUiThread(() -> {
                 // Ensure UI updates are done on the UI thread
-                accountHoldings.setText(resultString);
+                adapter = new AccountHoldingsAdapter(assetDetails);
+                accountHoldingsRecyclerView.setAdapter(adapter);
             });
         }
     }
