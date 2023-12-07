@@ -10,29 +10,31 @@
     <!-- Account Name -->
     <TextView
         android:id="@+id/accountNameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Account Name"
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.03"
-        android:layout_marginLeft="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <!-- Total Amount -->
     <TextView
         android:id="@+id/totalAmountTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Total Amount: $1000"
         android:textSize="22sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accountNameTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.1"
-        android:layout_marginLeft="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <!-- Time Series Line Chart -->
     <com.github.mikephil.charting.charts.LineChart
@@ -42,8 +44,9 @@
         app:layout_constraintTop_toBottomOf="@+id/totalAmountTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <TextView
         android:id="@+id/HoldingsTitle"
@@ -53,18 +56,20 @@
         android:text="Holdings"
         app:layout_constraintTop_toBottomOf="@+id/lineChart"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="50dp"/>
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp" />
 
     <TextView
         android:id="@+id/HoldingsTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="25sp"
         app:layout_constraintTop_toBottomOf="@+id/HoldingsTitle"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
     <!-- Bottom Navigation View -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -74,6 +79,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:menu="@menu/bottom_navigation_menu"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginTop="32dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

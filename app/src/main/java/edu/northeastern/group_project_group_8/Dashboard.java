@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -121,6 +122,20 @@ public class Dashboard extends AppCompatActivity {
         returnsLabel = findViewById(R.id.returnsString);
         returnsBackground = findViewById(R.id.returnsConstraintLayout);
         //*********************************************
+
+        // Set up bottom navigation
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        if (item.getItemId() == R.id.action_accounts) {
+                            launchAccountsPage();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
 
         getAccountData();
         accountCountTV.setOnClickListener(new View.OnClickListener() {

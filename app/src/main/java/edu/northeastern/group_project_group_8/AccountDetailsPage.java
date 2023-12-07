@@ -1,6 +1,7 @@
 package edu.northeastern.group_project_group_8;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,13 +46,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class AccountDetailsPage extends AppCompatActivity {
-    String accountName = "acct3";
-    double totalAsset = 23333.3;
+    String accountName;
+    double totalAsset;
     String loggedInUser;
     TextView totalAmountTextView;
     TextView accountHoldings;
@@ -90,19 +92,20 @@ public class AccountDetailsPage extends AppCompatActivity {
         TextView holdingsTitle = findViewById(R.id.HoldingsTitle);
         accountHoldings = findViewById(R.id.HoldingsTextView);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.action_accounts);
 
-        accountNameTextView.setText(accountName);
-        totalAmountTextView.setText("Total Asset: $" + totalAsset);
+        Bundle extras = getIntent().getExtras();
+        accountName = extras.getString("accountName");
+        String platform = extras.getString("platform");
+        totalAsset = extras.getDouble("totalAsset");
+        loggedInUser = extras.getString("loggedInUserName");
+
+        accountNameTextView.setText(platform + " " + accountName);
+        String totalAssetString = String.format(Locale.getDefault(), "%.2f", totalAsset);
+        totalAmountTextView.setText("Total Asset: $" + totalAssetString);
 
         resultBuilder = new StringBuilder();
 
-        Bundle extras = getIntent().getExtras();
-        if (extras == null) {
-            return;
-        }
-
-        loggedInUser = extras.getString("loggedInUsername");
-        Log.d("", "User: " + loggedInUser);
 
         // Initializations from PortfolioData**********
         positions = new ArrayList<>();
@@ -115,27 +118,35 @@ public class AccountDetailsPage extends AppCompatActivity {
         positionPricesV2 = new HashMap<>();
         //*********************************************
 
-        getAccountData();
-
         // Set up bottom navigation
-//        bottomNavigationView.setOnNavigationItemSelectedListener(
-//                new BottomNavigationView.OnNavigationItemSelectedListener() {
-//                    @Override
-//                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                        switch (item.getItemId()) {
-//                            case R.id.action_home:
-//                                // Handle home navigation
-//                                break;
-//                            case R.id.action_accounts:
-//                                // Handle positions navigation
-//                                break;
-//                            case R.id.action_holdings:
-//                                // Handle account details navigation
-//                                break;
-//                        }
-//                        return true;
-//                    }
-//                });
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        if (item.getItemId() == R.id.action_home) {
+                            launchUserDashboard();
+                            return true;
+                        } else if (item.getItemId() == R.id.action_accounts) {
+                            launchAccountsPage();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
+        getAccountData();
+    }
+
+    public void launchUserDashboard() {
+        Intent profileIntent = new Intent(this, Dashboard.class);
+        profileIntent.putExtra("loggedInUsername", loggedInUser);
+        startActivity(profileIntent);
+    }
+
+    public void launchAccountsPage() {
+        Intent accountsPageIntent = new Intent(this, AccountsPage.class);
+        accountsPageIntent.putExtra("loggedInUsername", loggedInUser);
+        startActivity(accountsPageIntent);
     }
 
     private void getAccountData() {
@@ -576,8 +587,6 @@ public class AccountDetailsPage extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 // Ensure UI updates are done on the UI thread
-                totalAsset = priceSumsByDate.get(priceSumsByDate.size() - 1).price;
-                totalAmountTextView.setText("Total Asset: $" + totalAsset);
                 accountHoldings.setText(resultString);
             });
         }

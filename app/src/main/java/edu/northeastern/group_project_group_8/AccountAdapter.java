@@ -2,6 +2,7 @@ package edu.northeastern.group_project_group_8;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,26 +61,39 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     String platform;
     String performance;
     double totalAsset;
+    String loggedInUser;
     HashMap<String, ArrayList<Price>> priceSumsByDateByAccount;
     HashMap<String, String> platformByAccountMap;
 
-    public AccountAdapter(Context context, ArrayList<String> accountNames, HashMap<String, ArrayList<Price>> priceSumsByDateByAccount, HashMap<String, String> platformByAccountMap) {
+    public AccountAdapter(Context context, ArrayList<String> accountNames, HashMap<String, ArrayList<Price>> priceSumsByDateByAccount, HashMap<String, String> platformByAccountMap, String loggedInUser) {
         this.context = context;
         this.accountNames = accountNames;
         this.priceSumsByDateByAccount = priceSumsByDateByAccount;
         this.platformByAccountMap = platformByAccountMap;
+        this.loggedInUser = loggedInUser;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.account_card_item, parent, false);
+
+        // Attach a click listener to the itemView
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int position = (int) v.getTag(); // Retrieve the position of the clicked item
+                launchAccountDetailsPage(position);
+            }
+        });
+
         return new ViewHolder(view);
     }
 
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.itemView.setTag(position);
         accountName = accountNames.get(position);
         platform = platformByAccountMap.get(accountName);
         holder.accountNameTextView.setText(accountName);
@@ -184,6 +198,19 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             performanceTextView = itemView.findViewById(R.id.performanceTextView);
             lineChart = itemView.findViewById(R.id.lineChart);
         }
+    }
+
+    private void launchAccountDetailsPage(int position) {
+        String clickedAccountName = accountNames.get(position);
+        String clickedPlatform = platformByAccountMap.get(clickedAccountName);
+        double clickedTotalAsset = priceSumsByDateByAccount.get(clickedAccountName).get(priceSumsByDateByAccount.get(clickedAccountName).size() - 1).price;
+
+        Intent intent = new Intent(context, AccountDetailsPage.class);
+        intent.putExtra("accountName", clickedAccountName);
+        intent.putExtra("platform", clickedPlatform);
+        intent.putExtra("totalAsset", clickedTotalAsset);
+        intent.putExtra("loggedInUserName", loggedInUser);
+        context.startActivity(intent);
     }
 }
 

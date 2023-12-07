@@ -1,8 +1,10 @@
 package edu.northeastern.group_project_group_8;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -88,11 +90,31 @@ public class AccountsPage extends AppCompatActivity {
         priceSumsByDateByAccount = new HashMap<>();
         platformByAccountMap = new HashMap<>();
 
+        TextView myAccountsTitle = findViewById(R.id.myAccountsTitle);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setSelectedItemId(R.id.action_accounts);
+        // Set up bottom navigation
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        if (item.getItemId() == R.id.action_home) {
+                            launchUserDashboard();
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
         getAccountData();
 //        ArrayList<String> accountNames = getAccountNames(); // Replace this with your data
 
-        TextView myAccountsTitle = findViewById(R.id.myAccountsTitle);
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+    }
+
+    public void launchUserDashboard() {
+        Intent profileIntent = new Intent(this, Dashboard.class);
+        profileIntent.putExtra("loggedInUsername", loggedInUser);
+        startActivity(profileIntent);
     }
 
     private void getAccountData() {
@@ -303,7 +325,7 @@ public class AccountsPage extends AppCompatActivity {
         }
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        AccountAdapter adapter = new AccountAdapter(this, accounts, priceSumsByDateByAccount, platformByAccountMap);
+        AccountAdapter adapter = new AccountAdapter(this, accounts, priceSumsByDateByAccount, platformByAccountMap, loggedInUser);
         recyclerView.setAdapter(adapter);
     }
 
@@ -507,17 +529,5 @@ public class AccountsPage extends AppCompatActivity {
     private String convertStreamToString(InputStream is) {
         Scanner s = new Scanner(is);
         return s.useDelimiter("\\A").next();
-    }
-
-    private ArrayList<String> getAccountNames() {
-        ArrayList<String> accountNames = new ArrayList<>();
-        accountNames.add("acct1");
-        accountNames.add("acct2");
-//        accountNames.add("acct1");
-//        accountNames.add("acct3");
-//        accountNames.add("acct1");
-//        accountNames.add("acct3");
-
-        return accountNames;
     }
 }
