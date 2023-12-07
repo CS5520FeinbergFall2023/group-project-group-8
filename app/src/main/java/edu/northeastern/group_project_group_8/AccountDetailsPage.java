@@ -61,9 +61,7 @@ public class AccountDetailsPage extends AppCompatActivity {
     List<String> assetDetails;
     AccountHoldingsAdapter adapter;
     RecyclerView accountHoldingsRecyclerView;
-    TextView accountHoldings;
     StringBuilder resultBuilder;
-    String resultString;
     private LineChart lineChart;
     private List<String> xValues;
     PortfolioData portfolioData;

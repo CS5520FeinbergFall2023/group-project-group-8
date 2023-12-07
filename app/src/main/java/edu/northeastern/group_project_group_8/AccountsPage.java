@@ -4,10 +4,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +28,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -106,9 +113,49 @@ public class AccountsPage extends AppCompatActivity {
                     }
                 });
 
-        getAccountData();
-//        ArrayList<String> accountNames = getAccountNames(); // Replace this with your data
+        FloatingActionButton fabAddAccount = findViewById(R.id.fabAddAccount);
+        fabAddAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddAccountDialog();
+            }
+        });
 
+        getAccountData();
+    }
+
+    private void showAddAccountDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_account, null);
+        builder.setView(dialogView);
+
+        // Get references to UI elements in the dialog
+        EditText editTextAccountName = dialogView.findViewById(R.id.editTextAccountName);
+        EditText editTextAccountNumber = dialogView.findViewById(R.id.editTextAccountNumber);
+        EditText editTextOwner = dialogView.findViewById(R.id.editTextOwner);
+        EditText editTextPlatform = dialogView.findViewById(R.id.editTextPlatform);
+        Button buttonSave = dialogView.findViewById(R.id.buttonSave);
+
+        // Create and show the dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        // Set up click listener for the "Save" button
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Handle saving the account information
+                String accountName = editTextAccountName.getText().toString();
+                String accountNumber = editTextAccountNumber.getText().toString();
+                String owner = editTextOwner.getText().toString();
+                String platform = editTextPlatform.getText().toString();
+                // TODO: Add logic to save the account information to firebase
+
+                // Dismiss the dialog
+                alertDialog.dismiss();
+            }
+        });
     }
 
     public void launchUserDashboard() {
@@ -510,19 +557,6 @@ public class AccountsPage extends AppCompatActivity {
                     Log.d("", "Price: " + price.price);
                 }
             }
-
-//            LocalDate dateKey = priceSumsByDate.get(priceSumsByDate.size() - 1).date;
-//            for (String assetKey : accountHoldingsByDateMap.get(accountName)
-//                    .get(dateKey)
-//                    .keySet()) {
-//                resultBuilder.append(assetKey).append(": ");
-//                resultBuilder.append(accountHoldingsByDateMap.get(accountName).get(dateKey).get(assetKey)).append(" share at $");
-//                resultBuilder.append(positionPricesV2.get(assetKey).get(dateKey)).append("\n\n");
-//            }
-//            String resultString = resultBuilder.toString();
-
-
-//            totalAsset = priceSumsByDate.get(priceSumsByDate.size() - 1).price;
         }
     }
 

@@ -1,0 +1,63 @@
+<!-- dialog_add_account.xml -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp">
+
+    <!-- Account Name -->
+    <EditText
+        android:id="@+id/editTextAccountName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Account Name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_default="wrap"/>
+
+    <!-- Account Number -->
+    <EditText
+        android:id="@+id/editTextAccountNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Account Number"
+        app:layout_constraintTop_toBottomOf="@+id/editTextAccountName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_default="wrap"/>
+
+    <!-- Owner -->
+    <EditText
+        android:id="@+id/editTextOwner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Owner"
+        app:layout_constraintTop_toBottomOf="@+id/editTextAccountNumber"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_default="wrap"/>
+
+    <!-- Platform -->
+    <EditText
+        android:id="@+id/editTextPlatform"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Platform"
+        app:layout_constraintTop_toBottomOf="@+id/editTextOwner"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_default="wrap"/>
+
+    <!-- Save Button -->
+    <Button
+        android:id="@+id/buttonSave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPlatform"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
