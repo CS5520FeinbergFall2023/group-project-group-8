@@ -1,5 +1,6 @@
 package edu.northeastern.group_project_group_8;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,12 +13,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -343,7 +348,7 @@ public class AccountDetailsPage extends AppCompatActivity {
         xAxis.setDrawGridLines(false);
 
         YAxis yAxis = lineChart.getAxisLeft();
-        yAxis.setAxisMinimum(0f);
+//        yAxis.setAxisMinimum(0f);
 //        yAxis.setAxisMaximum(500f);
         yAxis.setAxisLineWidth(2f);
         yAxis.setAxisLineColor(Color.BLACK);
@@ -367,6 +372,23 @@ public class AccountDetailsPage extends AppCompatActivity {
 
         LineData lineData = new LineData(dataSet1);
         lineData.setDrawValues(false);
+
+        MarkerView marker = new CustomMarkerView(this, R.layout.marker_view);
+
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                lineChart.highlightValue(h);
+                Log.d("", "Highlight: " + h.toString());
+                lineChart.setMarker(marker);
+                marker.refreshContent(e, h);
+            }
+
+            @Override
+            public void onNothingSelected() {
+
+            }
+        });
 
         lineChart.setData(lineData);
         lineChart.setAutoScaleMinMaxEnabled(true);
@@ -564,5 +586,43 @@ public class AccountDetailsPage extends AppCompatActivity {
     private String convertStreamToString(InputStream is) {
         Scanner s = new Scanner(is);
         return s.useDelimiter("\\A").next();
+    }
+
+    public class CustomMarkerView extends MarkerView {
+        TextView valueView;
+        TextView dateView;
+
+        /**
+         * Constructor. Sets up the MarkerView with a custom layout resource.
+         *
+         * @param context
+         * @param layoutResource the layout resource to use for the MarkerView
+         */
+        public CustomMarkerView(Context context, int layoutResource) {
+            super(context, layoutResource);
+            valueView = findViewById(R.id.valueView);
+            dateView = findViewById(R.id.dateView);
+        }
+
+        @Override
+        public void refreshContent(Entry e, Highlight highlight) {
+            valueView.setText("$" + String.valueOf(highlight.getY()));
+            LocalDate date = priceSumsByDate.get((int)highlight.getX()).date;
+            dateView.setText(date.toString());
+            super.refreshContent(e, highlight);
+        }
+
+        private MPPointF mOffset;
+
+        @Override
+        public MPPointF getOffset() {
+
+            if(mOffset == null) {
+                // center the marker horizontally and vertically
+                mOffset = new MPPointF(-(getWidth() / 2), -getHeight()-200);
+            }
+
+            return mOffset;
+        }
     }
 }

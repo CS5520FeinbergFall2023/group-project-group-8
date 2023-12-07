@@ -130,7 +130,7 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         xAxis.setDrawGridLines(false);
 
         YAxis yAxis = holder.lineChart.getAxisLeft();
-        yAxis.setAxisMinimum(0f);
+//        yAxis.setAxisMinimum(0f);
 //        yAxis.setAxisMaximum(500f);
         yAxis.setAxisLineWidth(2f);
         yAxis.setAxisLineColor(Color.BLACK);
@@ -146,14 +146,13 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
         LineDataSet dataSet1 = new LineDataSet(entries1, "");
         dataSet1.setColor(Color.BLUE);
         dataSet1.setDrawCircles(false);
-//        dataSet1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-//        dataSet1.setCubicIntensity(1f);
 
         Legend legend = holder.lineChart.getLegend();
         legend.setEnabled(false);
 
         LineData lineData = new LineData(dataSet1);
         lineData.setDrawValues(false);
+        holder.lineChart.setTouchEnabled(false);
 
         holder.lineChart.setData(lineData);
         holder.lineChart.setAutoScaleMinMaxEnabled(true);
