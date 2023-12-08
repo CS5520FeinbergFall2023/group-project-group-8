@@ -150,10 +150,22 @@ public class AccountsPage extends AppCompatActivity {
                 String accountNumber = editTextAccountNumber.getText().toString();
                 String owner = editTextOwner.getText().toString();
                 String platform = editTextPlatform.getText().toString();
-                // TODO: Add logic to save the account information to firebase
 
-                // Dismiss the dialog
-                alertDialog.dismiss();
+                // handle input and write account to DB
+                if (accountNumber.equals("") || platform.equals("")) {// Handling empty inputs in fields we need
+                    Toast.makeText(AccountsPage.this, "Please enter an Account Number and Financial Institution/ Platform.", Toast.LENGTH_SHORT).show();
+                } else if (accounts.contains(accountNumber)) {// Handling if account number already exists
+                    Toast.makeText(AccountsPage.this, "You already have an account with the same account number.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Account newAccount = new Account(accountNumber, loggedInUser, platform);
+                    Log.d("", "Account Number: " + newAccount.AccountNumber);
+                    Log.d("", "Account Owner: " + newAccount.owner);
+                    Log.d("", "Account Platform: " + newAccount.platform);
+                    mDatabaseAccounts.child(newAccount.AccountNumber).setValue(newAccount);
+
+                    // Dismiss the dialog
+                    alertDialog.dismiss();
+                }
             }
         });
     }
