@@ -122,57 +122,53 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
             holder.totalAmountTextView.setText("$0.00");
         }
 
+        if (holder.priceSumsByDate != null && holder.priceSumsByDate.size() > 0) {
+            Description description = new Description();
+            description.setText("");
+            holder.lineChart.setDescription(description);
+            holder.lineChart.getAxisRight().setDrawLabels(false);
+            ArrayList<String> portfolioDates = new ArrayList<>();
+            for (Price date: holder.priceSumsByDate) {
+                portfolioDates.add(date.date.toString());
+            }
+            holder.xValues = portfolioDates;
 
-        Description description = new Description();
-        description.setText("");
-//        description.setPosition(250f, 150f);
-        holder.lineChart.setDescription(description);
-        holder.lineChart.getAxisRight().setDrawLabels(false);
-        ArrayList<String> portfolioDates = new ArrayList<>();
-        for (Price date: holder.priceSumsByDate) {
-            portfolioDates.add(date.date.toString());
+            XAxis xAxis = holder.lineChart.getXAxis();
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(holder.xValues));
+            xAxis.setLabelCount(4);
+            xAxis.setGranularity(1f);
+            xAxis.setDrawGridLines(false);
+
+            YAxis yAxis = holder.lineChart.getAxisLeft();
+            yAxis.setAxisLineWidth(2f);
+            yAxis.setAxisLineColor(Color.BLACK);
+            yAxis.setLabelCount(10);
+            yAxis.setDrawGridLines(false);
+
+            List<Entry> entries1 = new ArrayList<>();
+            for (int i = 0; i < holder.priceSumsByDate.size(); i++) {
+                Price currentPrice = holder.priceSumsByDate.get(i);
+                entries1.add(new Entry(i, currentPrice.price.floatValue()));
+            }
+
+            LineDataSet dataSet1 = new LineDataSet(entries1, "");
+            dataSet1.setColor(Color.BLUE);
+            dataSet1.setDrawCircles(false);
+
+            Legend legend = holder.lineChart.getLegend();
+            legend.setEnabled(false);
+
+            LineData lineData = new LineData(dataSet1);
+            lineData.setDrawValues(false);
+            holder.lineChart.setTouchEnabled(false);
+
+            holder.lineChart.setData(lineData);
+            holder.lineChart.setAutoScaleMinMaxEnabled(true);
+            holder.lineChart.animateY(1000);
+
+            holder.lineChart.invalidate();
         }
-//        xValues = Arrays.asList(String.valueOf(portfolioDates));
-        holder.xValues = portfolioDates;
-
-        XAxis xAxis = holder.lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(holder.xValues));
-        xAxis.setLabelCount(4);
-        xAxis.setGranularity(1f);
-//        xAxis.setDrawLabels(false);
-        xAxis.setDrawGridLines(false);
-
-        YAxis yAxis = holder.lineChart.getAxisLeft();
-//        yAxis.setAxisMinimum(0f);
-//        yAxis.setAxisMaximum(500f);
-        yAxis.setAxisLineWidth(2f);
-        yAxis.setAxisLineColor(Color.BLACK);
-        yAxis.setLabelCount(10);
-        yAxis.setDrawGridLines(false);
-
-        List<Entry> entries1 = new ArrayList<>();
-        for (int i = 0; i < holder.priceSumsByDate.size(); i++) {
-            Price currentPrice = holder.priceSumsByDate.get(i);
-            entries1.add(new Entry(i, currentPrice.price.floatValue()));
-        }
-
-        LineDataSet dataSet1 = new LineDataSet(entries1, "");
-        dataSet1.setColor(Color.BLUE);
-        dataSet1.setDrawCircles(false);
-
-        Legend legend = holder.lineChart.getLegend();
-        legend.setEnabled(false);
-
-        LineData lineData = new LineData(dataSet1);
-        lineData.setDrawValues(false);
-        holder.lineChart.setTouchEnabled(false);
-
-        holder.lineChart.setData(lineData);
-        holder.lineChart.setAutoScaleMinMaxEnabled(true);
-        holder.lineChart.animateY(1000);
-
-        holder.lineChart.invalidate();
     }
 
     @Override

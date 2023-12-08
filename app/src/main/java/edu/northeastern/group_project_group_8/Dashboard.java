@@ -174,7 +174,9 @@ public class Dashboard extends AppCompatActivity {
                         Log.d("", "Account while getting accounts: " + account);
                     }
                     accountCountTV.setText(String.valueOf(accounts.size()));
-                    getHoldingsData();
+                    if (accounts.size() > 0) {
+                        getHoldingsData();
+                    }
                 }
             }
         });
@@ -221,7 +223,9 @@ public class Dashboard extends AppCompatActivity {
                         }
                     }
                     Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
-                    buildPortfolio();
+                    if (holdings.size() > 0) {
+                        buildPortfolio();
+                    }
                 }
             }
         });
