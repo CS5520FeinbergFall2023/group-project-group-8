@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -199,14 +200,19 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.ViewHold
     private void launchAccountDetailsPage(int position) {
         String clickedAccountName = accountNames.get(position);
         String clickedPlatform = platformByAccountMap.get(clickedAccountName);
-        double clickedTotalAsset = priceSumsByDateByAccount.get(clickedAccountName).get(priceSumsByDateByAccount.get(clickedAccountName).size() - 1).price;
 
-        Intent intent = new Intent(context, AccountDetailsPage.class);
-        intent.putExtra("accountName", clickedAccountName);
-        intent.putExtra("platform", clickedPlatform);
-        intent.putExtra("totalAsset", clickedTotalAsset);
-        intent.putExtra("loggedInUserName", loggedInUser);
-        context.startActivity(intent);
+        if (priceSumsByDateByAccount.get(clickedAccountName) == null || priceSumsByDateByAccount.get(clickedAccountName).size() == 0) {
+            Toast.makeText(context, "This account does not have any holdings.", Toast.LENGTH_SHORT).show();
+        } else {
+            double clickedTotalAsset = priceSumsByDateByAccount.get(clickedAccountName).get(priceSumsByDateByAccount.get(clickedAccountName).size() - 1).price;
+
+            Intent intent = new Intent(context, AccountDetailsPage.class);
+            intent.putExtra("accountName", clickedAccountName);
+            intent.putExtra("platform", clickedPlatform);
+            intent.putExtra("totalAsset", clickedTotalAsset);
+            intent.putExtra("loggedInUserName", loggedInUser);
+            context.startActivity(intent);
+        }
     }
 }
 
