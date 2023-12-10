@@ -5,10 +5,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +37,8 @@ import com.github.mikephil.charting.utils.MPPointF;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.transition.Hold;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -52,6 +62,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class AccountDetailsPage extends AppCompatActivity {
     String accountName;
@@ -80,10 +91,12 @@ public class AccountDetailsPage extends AppCompatActivity {
     // List of all holdings across all accounts in the portfolio.  This is pulled directly from the DB.
     ArrayList<Holding> holdings;
     // A map that gives the number of each asset held on each date in each account.
-    // So we map thw account name to a map of dates, which are each mapped to a map
+    // So we map the account name to a map of dates, which are each mapped to a map
     // of asset names, which each have a count value denoting how many of that asset
     // were held on that date in that account.  This is used to build priceSumsByDate.
     HashMap<String, HashMap<LocalDate, HashMap<String, Long>>> accountHoldingsByDateMap;
+
+    FloatingActionButton addHoldingsFAB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +108,14 @@ public class AccountDetailsPage extends AppCompatActivity {
         TextView holdingsTitle = findViewById(R.id.HoldingsTitle);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.action_accounts);
+        addHoldingsFAB = findViewById(R.id.fabAddHolding);
+
+        addHoldingsFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddHoldingsDialog();
+            }
+        });
 
         Bundle extras = getIntent().getExtras();
         accountName = extras.getString("accountName");
@@ -141,6 +162,73 @@ public class AccountDetailsPage extends AppCompatActivity {
                 });
 
         getAccountData();
+    }
+
+    private void showAddHoldingsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_holdings, null);
+        builder.setView(dialogView);
+
+        // Get references to UI elements in the dialog
+        EditText editTextAssetTicker = dialogView.findViewById(R.id.editTextAssetTicker);
+        ToggleButton buySellToggleButton = dialogView.findViewById(R.id.toggleButtonBuySell);
+        EditText editTextCount = dialogView.findViewById(R.id.editTextCount);
+        buySellToggleButton.setChecked(true);
+
+        Button buttonSave = dialogView.findViewById(R.id.buttonSave);
+
+        // Create and show the dialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        // Set up click listener for the "Save" button
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Handle saving the account information
+                String assetTicker = editTextAssetTicker.getText().toString().toUpperCase();
+                int count = Integer.parseInt(editTextCount.getText().toString());
+                Boolean buySell = buySellToggleButton.isChecked();
+
+                // handle input and write account to DB
+                if (buySell) {// Buy
+
+                } else {// Sell
+                    if (positions.contains(assetTicker) && accountHoldingsByDateMap.get(accountName).get(LocalDate.now()).get(assetTicker) >= count) {
+                        Log.d("", "accountHoldingsByDate: " + accountHoldingsByDateMap.get(accountName).get(LocalDate.now()));
+                        Log.d("", "accountHoldingsByDate: " + accountHoldingsByDateMap.get(accountName).get(LocalDate.now()).get(assetTicker));
+                        Log.d("", "Today: " + LocalDate.now());
+                        int numberToReduce = count;
+                        //TODO: end date as yesterday for latest holding with this asset, remove count, and save with open end date and start date as today
+                        for (Holding holding : holdings) {
+                            Log.d("", "Holding Key: " + holding.holdingKey);
+                            Log.d("", "Holding Asset: " + holding.asset);
+                            Log.d("", "Holding End Date: " + holding.endDate);
+                            Holding copiedHolding = new Holding(holding.holdingKey, holding.account, holding.asset, holding.count, holding.startDate, holding.endDate);
+                            if (holding.asset.toUpperCase().equals(assetTicker.toUpperCase()) && numberToReduce > 0 && holding.endDate == null) {
+                                //The account has enough shares to sell
+                                if (holding.count > numberToReduce) {
+                                    holding.count -= numberToReduce;
+                                    numberToReduce = 0;
+                                } else {
+                                    numberToReduce -= holding.count;
+                                    holding.count = 0;
+                                }
+                                HoldingUpload oldHoldingUpload = new HoldingUpload(copiedHolding.account, copiedHolding.asset, copiedHolding.count, copiedHolding.startDate.toString(), LocalDate.now().minusDays(1).toString());
+                                HoldingUpload newHoldingUpload = new HoldingUpload(holding.account, holding.asset, holding.count, LocalDate.now().toString(), "-1");
+                                mDatabaseHoldings.child(holding.holdingKey).setValue(oldHoldingUpload);
+                                mDatabaseHoldings.child(UUID.randomUUID().toString()).setValue(newHoldingUpload);
+                            }
+                        }
+                    } else {
+                        Toast.makeText(AccountDetailsPage.this, "You do not own enough shares to sell.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                // Dismiss the dialog
+                alertDialog.dismiss();
+            }
+        });
     }
 
     public void launchUserDashboard() {
@@ -210,7 +298,7 @@ public class AccountDetailsPage extends AppCompatActivity {
                             Log.d("", "newcurrentCount: " + currentCount);
                             Log.d("", "newcurrentStartDate: " + currentStartDate);
                             Log.d("", "newcurrentEndDate: " + currentEndDate);
-                            holdings.add(new Holding(currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
+                            holdings.add(new Holding(key, currentAcct, currentAsset, currentCount, currentStartDate, currentEndDate));
                         }
                     }
                     Log.d("", "Holdings length in getHoldingsData: " + holdings.size());
