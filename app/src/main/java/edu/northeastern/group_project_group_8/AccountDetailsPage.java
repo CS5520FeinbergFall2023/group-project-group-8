@@ -193,7 +193,6 @@ public class AccountDetailsPage extends AppCompatActivity {
 
                 // handle input and write account to DB
                 if (buySell) {// Buy
-                    //TODO: if the position is already in the account
                     if (positions.contains(assetTicker)) {
                         for (Holding holding : holdings) {
                             if (holding.endDate == null && holding.asset.toUpperCase().equals(assetTicker.toUpperCase())) {
