@@ -8,4 +8,6 @@
     <string name="platformString">Platform</string>
     <string name="dummyAmountString">$1000</string>
     <string name="performance_data_String">Performance Data</string>
+    <string name="homeString">Home</string>
+    <string name="accountsString">Accounts</string>
 </resources>
