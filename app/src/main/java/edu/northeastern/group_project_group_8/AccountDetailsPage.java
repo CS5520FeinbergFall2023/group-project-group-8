@@ -193,14 +193,32 @@ public class AccountDetailsPage extends AppCompatActivity {
 
                 // handle input and write account to DB
                 if (buySell) {// Buy
-
+                    //TODO: if the position is already in the account
+                    if (positions.contains(assetTicker)) {
+                        for (Holding holding : holdings) {
+                            if (holding.endDate == null && holding.asset.toUpperCase().equals(assetTicker.toUpperCase())) {
+                                HoldingUpload oldHoldingUpload = new HoldingUpload(holding.account, holding.asset, holding.count, holding.startDate.toString(), LocalDate.now().minusDays(1).toString());
+                                HoldingUpload newHoldingUpload = new HoldingUpload(accountName, assetTicker, count + holding.count, LocalDate.now().toString(), "-1");
+                                mDatabaseHoldings.child(holding.holdingKey).setValue(oldHoldingUpload);
+                                mDatabaseHoldings.child(UUID.randomUUID().toString()).setValue(newHoldingUpload);
+                            }
+                        }
+                        Toast.makeText(AccountDetailsPage.this, "Transaction Complete.", Toast.LENGTH_SHORT).show();
+                        // Dismiss the dialog
+                        alertDialog.dismiss();
+                    } else {
+                        HoldingUpload newHoldingUpload = new HoldingUpload(accountName, assetTicker, count, LocalDate.now().toString(), "-1");
+                        mDatabaseHoldings.child(UUID.randomUUID().toString()).setValue(newHoldingUpload);
+                        Toast.makeText(AccountDetailsPage.this, "Transaction Complete.", Toast.LENGTH_SHORT).show();
+                        // Dismiss the dialog
+                        alertDialog.dismiss();
+                    }
                 } else {// Sell
                     if (positions.contains(assetTicker) && accountHoldingsByDateMap.get(accountName).get(LocalDate.now()).get(assetTicker) >= count) {
                         Log.d("", "accountHoldingsByDate: " + accountHoldingsByDateMap.get(accountName).get(LocalDate.now()));
                         Log.d("", "accountHoldingsByDate: " + accountHoldingsByDateMap.get(accountName).get(LocalDate.now()).get(assetTicker));
                         Log.d("", "Today: " + LocalDate.now());
                         int numberToReduce = count;
-                        //TODO: end date as yesterday for latest holding with this asset, remove count, and save with open end date and start date as today
                         for (Holding holding : holdings) {
                             Log.d("", "Holding Key: " + holding.holdingKey);
                             Log.d("", "Holding Asset: " + holding.asset);
