@@ -218,15 +218,20 @@ public class AccountDetailsPage extends AppCompatActivity {
                                 HoldingUpload oldHoldingUpload = new HoldingUpload(copiedHolding.account, copiedHolding.asset, copiedHolding.count, copiedHolding.startDate.toString(), LocalDate.now().minusDays(1).toString());
                                 HoldingUpload newHoldingUpload = new HoldingUpload(holding.account, holding.asset, holding.count, LocalDate.now().toString(), "-1");
                                 mDatabaseHoldings.child(holding.holdingKey).setValue(oldHoldingUpload);
-                                mDatabaseHoldings.child(UUID.randomUUID().toString()).setValue(newHoldingUpload);
+                                if (newHoldingUpload.count > 0) {
+                                    mDatabaseHoldings.child(UUID.randomUUID().toString()).setValue(newHoldingUpload);
+                                }
                             }
                         }
+                        Toast.makeText(AccountDetailsPage.this, "Transaction Complete.", Toast.LENGTH_SHORT).show();
+                        // Dismiss the dialog
+                        alertDialog.dismiss();
                     } else {
                         Toast.makeText(AccountDetailsPage.this, "You do not own enough shares to sell.", Toast.LENGTH_SHORT).show();
+                        // Dismiss the dialog
+                        alertDialog.dismiss();
                     }
                 }
-                // Dismiss the dialog
-                alertDialog.dismiss();
             }
         });
     }
