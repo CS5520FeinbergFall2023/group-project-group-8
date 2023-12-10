@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AccountDetailsPage">
+    android:background="@android:color/background_light">
 
     <!-- Account Name -->
     <TextView
@@ -13,8 +13,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Account Name"
-        android:textSize="40sp"
+        android:textSize="24sp"
         android:textStyle="bold"
+        android:fontFamily="sans-serif-medium"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +29,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Total Amount: $1000"
-        android:textSize="22sp"
+        android:textSize="18sp"
         app:layout_constraintTop_toBottomOf="@+id/accountNameTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -48,17 +49,19 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp" />
 
+    <!-- Holdings Title -->
     <TextView
         android:id="@+id/HoldingsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="30sp"
+        android:textSize="26sp"
         android:text="Holdings"
         app:layout_constraintTop_toBottomOf="@+id/lineChart"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="24dp"
         android:layout_marginStart="16dp" />
 
+    <!-- RecyclerView for Account Holdings -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/accountHoldingsRecyclerView"
         android:layout_width="0dp"
@@ -82,12 +85,14 @@
         android:layout_marginEnd="0dp"
         android:layout_marginTop="32dp" />
 
+    <!-- Floating Action Button for Adding Holdings -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddHolding"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="26dp"
         android:src="@android:drawable/ic_input_add"
+        app:elevation="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
