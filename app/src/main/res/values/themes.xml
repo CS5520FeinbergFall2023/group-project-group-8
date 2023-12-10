@@ -3,6 +3,9 @@
     <style name="Base.Theme.Groupprojectgroup8" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/metallic_seaweed</item>
+        <item name="colorPrimaryVariant">@color/teal_light</item>
+
     </style>
 
     <style name="Theme.Groupprojectgroup8" parent="Base.Theme.Groupprojectgroup8" />
