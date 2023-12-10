@@ -15,4 +15,7 @@
     <string name="save">Save</string>
     <string name="homeString">Home</string>
     <string name="accountsString">Accounts</string>
+    <string name="granulrString">Granulr</string>
+    <string name="logoString">Logo</string>
+    <string name="unify_visualize_master_your_finances_string">Unify, Visualize, Master Your Finances</string>
 </resources>
