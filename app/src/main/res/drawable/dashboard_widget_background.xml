@@ -7,7 +7,7 @@
     <corners android:radius="20dp" />
 
     <!-- border color -->
-    <stroke android:width="2dp" android:color="@color/material_dynamic_neutral40" />
+    <stroke android:width="2dp" android:color="@color/material_dynamic_neutral90" />
 
     <!--- background color -->
     <solid android:color="@color/material_dynamic_neutral100" />

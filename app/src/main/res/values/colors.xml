@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="teal">#00637C</color>
+    <color name="teal_light">#81E6D9</color>
+    <color name="metallic_seaweed">#0A7E8C</color>
+
 </resources>

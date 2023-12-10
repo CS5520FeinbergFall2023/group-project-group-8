@@ -8,9 +8,14 @@
     <string name="platformString">Platform</string>
     <string name="dummyAmountString">$1000</string>
     <string name="performance_data_String">Performance Data</string>
+<<<<<<< HEAD
     <string name="asset_ticker">Asset Ticker</string>
     <string name="sell">Sell</string>
     <string name="buy">Buy</string>
     <string name="buy_sell">Buy/Sell</string>
     <string name="save">Save</string>
+=======
+    <string name="homeString">Home</string>
+    <string name="accountsString">Accounts</string>
+>>>>>>> d735a477c6556f07cea732436a07688e485123cc
 </resources>

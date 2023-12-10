@@ -70,6 +70,10 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@drawable/dashboard_widget_background"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_percent="0.2"
@@ -119,14 +123,14 @@
         android:id="@+id/dashboardGreeting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="20sp"
-        android:textStyle="bold"
         app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.15" />
+        app:layout_constraintVertical_bias="0.10" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
